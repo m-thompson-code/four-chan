@@ -1,0 +1,49 @@
+@import 'styles/variables.scss';
+
+:host {
+    display: block;
+
+    width: 100%;
+    height: auto;
+}
+
+.thread {
+    position: relative;
+    top: 0;
+    left: 0;
+
+    display: flex;
+
+    width: 100%;
+    height: auto;
+
+    margin-bottom: $spacing;
+}
+
+.posts {
+    width: 50%;
+    padding: $spacing/4;
+    box-sizing: border-box;
+    // max-height: 100vh;
+    // overflow:auto;
+    // TODO: use var instead
+}
+
+moo-post {
+    margin-bottom: $spacing/2;
+}
+
+.visibility-debug {
+    background: rgba(black, .6);
+    color: white;
+}
+
+@media only screen and (max-width: 800px) {
+    .thread {
+        flex-direction: column;
+        
+        .posts {
+            width: 100%;
+        }
+    }
+}

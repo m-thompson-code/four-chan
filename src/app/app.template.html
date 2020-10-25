@@ -1,0 +1,45 @@
+<div [class]="'top-nav' + (showBoards ? ' boards-showing' : '') + (!selectedBoards.length ? ' no-board-selected' : '')">
+    <div *ngIf="!selectedBoards.length || showBoards" class="boards">
+        <a *ngFor="let board of boards" [class]="selectedBoardMap[board] ? 'selected' : ''" (click)="toggleBoard(board)">{{ board }}</a>
+    </div>
+
+    <div class="top-nav-links">
+        <a (click)="closeAllThreads()">Close all</a><a (click)="clearThreadsAbove()">Close above</a><a (click)="clearBlocks()">Clear blocks</a><a class="boards-toggle" (click)="showBoards = !showBoards">Toggle boards</a>
+    </div>
+</div>
+
+<div *ngIf="!selectedBoards.length">
+    Select a board to view content from <a href="https://4chan.org">4chan.org</a>. Please note that the content on 4chan can be very sensitive and at times law-breaking. Explore at your own risk.
+    <br>
+    "4chan is a simple image-based bulletin board where anyone can post comments and share images. There are boards dedicated to a variety of topics, from Japanese animation and culture to videogames, music, and photography. Users do not need to register an account before participating in the community." - <a href="https://4chan.org">4chan.org</a>
+    <br>
+    "4chan has often been the subject of media attention as a source of controversies, including the coordination of pranks, harassment, attacks against other websites and Internet users, and the posting of illegal content, threats of violence, misogyny and racism" - <a href="https://en.wikipedia.org/wiki/4chan" target="_blank">wiki</a>
+    <br>
+    https://github.com/4chan/4chan-API
+
+    https://www.makeuseof.com/tag/4chan-controversies/
+
+    This application is just something I've created in my spare time. Growing up I used to go on 4chan.org (the clean parts I swear). I have no plans to throw ads around or try to use this application to market my applications, products, or services <a href="https://github.com/4chan/4chan-API#api-terms-of-service">(*)</a>.
+
+    -include git repo- This repo is open source. If there are any problems contact me through github.
+</div>
+
+<div class="threads">
+    <ng-container *ngFor="let thread of threads">
+        <div class="thread-header">
+            <a [href]="'https://boards.4channel.org/' + thread.board + '/'" *ngIf="selectedBoards.length > 1">/{{ thread.board }}/</a>
+            <a (click)="blockThread(thread)">Block</a>
+            <a (click)="closeThread(thread)">Close</a>
+            <a (click)="loadFullPosts(thread)">Full load</a>
+            <a *ngIf=" thread.mainPosts[0]?.no" [href]="'https://boards.4chan.org/' + thread.board + '/thread/' + thread.mainPosts[0].no + '#p' + thread.mainPosts[0].no" target="_blank">4chan.org</a>
+        </div>
+    
+        <moo-thread [thread]="thread"></moo-thread>
+    
+        <div class="line-break"></div>
+    </ng-container>
+</div>
+
+<div *ngIf="loaderService.loaderCount > 0" class="loader">
+    LOADING . . .
+</div>

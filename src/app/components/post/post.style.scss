@@ -1,0 +1,40 @@
+@import 'styles/variables.scss';
+
+:host {
+    display: block;
+
+    width: 100%;
+    height: auto;
+}
+
+img {
+    max-width: 100%;
+    // height: auto;// Removed to allow for the height attr on image to allow for proper sizing when img renders before loading
+}
+
+.image-container {
+    cursor: pointer;
+}
+
+.comment {
+    line-height: 1.2;
+}
+
+.comment-html-string {
+    box-sizing: border-box;
+    padding: $spacing/4;
+
+    border-radius: $spacing/4;
+
+    background: rgba(255, 255, 255, .1);
+
+    line-height: 2;
+}
+
+.html-toggle {
+    font-size: .5em;
+}
+
+span, a {
+    overflow-wrap: break-word;
+}

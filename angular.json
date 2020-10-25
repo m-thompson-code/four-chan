@@ -33,6 +33,11 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -97,6 +102,11 @@
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
             "scripts": []
           }
         },
@@ -126,6 +136,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "four-chan"
+    }
+  },
+  "defaultProject": "four-chan",
+  "cli": {
+    "analytics": "9f22af1d-5bd6-42a3-be72-d5430bf31c7d"
+  }
 }

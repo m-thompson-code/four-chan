@@ -1,0 +1,14 @@
+<div class="thread" mooScrollListener (visibilityChanged)="updateVisibilityLogic($event)">
+    <div class="main-posts posts">
+        <moo-post *ngFor="let post of thread.mainPosts" [post]="post"></moo-post>
+    </div>
+
+    <div class="posts">
+        <moo-post *ngFor="let post of thread.posts" [post]="post"></moo-post>
+    </div>
+    
+<!-- 
+    <div *ngIf="thread.visibility" class="visibility-debug">
+        {{ JSON.stringify(thread.visibility, null, 4) }}
+    </div> -->
+</div>
