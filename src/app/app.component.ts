@@ -36,6 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     public initalized: boolean = false;
 
+    private _detachListeners?: () => void;
+
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
         public loaderService: LoaderService) {
@@ -46,6 +48,38 @@ export class AppComponent implements OnInit, OnDestroy {
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
             // console.log('APP', value);
         });
+
+        // Handle getting screen height css variables
+        const appHeight = () => {
+            try {
+                const doc = document.documentElement;
+
+                const windowHeight = window.innerHeight;
+
+                doc.style.setProperty('--app-height-100', `${windowHeight}px`);
+                doc.style.setProperty('--app-height-95', `${windowHeight * .95}px`);
+                doc.style.setProperty('--app-height-50', `${windowHeight * .5}px`);
+            } catch(error) {
+                // if (environment.env !== 'prod') {
+                    console.error(error);
+                    debugger;
+                // }
+            }
+        }
+
+        const _onresize = () => {
+            appHeight();
+        };
+
+        const _off__resize = this.renderer.listen('window', 'resize', _onresize);
+        const _off__orientationchange = this.renderer.listen('window', 'orientationchange', _onresize);
+        
+        this._detachListeners = () => {
+            _off__resize();
+            _off__orientationchange();
+        };
+
+        appHeight();
 
         void this.init();
     }
@@ -428,5 +462,6 @@ export class AppComponent implements OnInit, OnDestroy {
         clearTimeout(this.getThreadsLoopTimeout);
 
         this.scrollObserver?.unsubscribe();
+        this._detachListeners && this._detachListeners();
     }
 }

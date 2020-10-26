@@ -1,5 +1,9 @@
 <div *ngIf="selectedBoards.length || showBoards" [class]="'top-nav' + (showBoards ? ' boards-showing' : '') + (!selectedBoards.length ? ' no-board-selected' : '')">
     <div *ngIf="showBoards" class="boards">
+        <div class="board-text">
+            Select as many boards as you'd like
+        </div>
+        
         <a *ngFor="let board of boards" [class]="selectedBoardMap[board] ? 'selected' : ''" (click)="toggleBoard(board)">{{ board }}</a>
     </div>
 

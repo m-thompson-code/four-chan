@@ -1,15 +1,15 @@
 <div #postDiv>
     <div class="header">
         <a [href]="'https://boards.4chan.org/' + post.board + '/thread/' + (post.resto || post.no) + '#p' + post.no" target="_blank">
-            <span>
+            <span class="post-no">
                 {{ post.no }}
             </span>
             <span *ngIf="post.sticky">
                 &nbsp;(sticky)&nbsp;
             </span>
         </a>
-        <span>
-            {{ post.time | date:'M/d h:mm a' }}
+        <span class="timestamp">
+            {{ (post.time * 1000) | date:'M/d h:mm a' }}
         </span>
     </div>
 

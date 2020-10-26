@@ -25,8 +25,8 @@
     padding: $spacing/4;
     box-sizing: border-box;
     // max-height: 100vh;
+    // max-height: var(--app-height-100);
     // overflow:auto;
-    // TODO: use var instead
 }
 
 moo-post {

@@ -18,7 +18,7 @@
     box-sizing: border-box;
 
     max-height: 100vh;
-    // TODO: use var
+    max-height: var(--app-height-100);
 
     overflow: auto;
 
@@ -103,6 +103,10 @@
     margin-top: $spacing * 3;
 }
 
+.board-text {
+    width: 100%;
+}
+
 @media only screen and (max-width: 800px) {
     .thread-header, .top-nav {
         span, a {
@@ -130,7 +134,7 @@
         flex-wrap: nowrap;
 
         min-height: 100vh;
-        // TODO: add var
+        min-height: var(--app-height-100);
 
         // Push everything else down (like the .top-nav-links)
         .boards {
