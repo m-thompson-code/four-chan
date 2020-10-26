@@ -89,7 +89,7 @@ export class DataService {
         }
     }
 
-    public get(url: string): Promise<any> {
+    public _get(url: string): Promise<any> {
         const headers = new HttpHeaders({
             // 'Content-Type': 'application/json',
             // 'Accept': 'application/json',
@@ -121,9 +121,37 @@ export class DataService {
         });
     }
 
+    public get(pathname: string): Promise<any> {
+        const _pathname = pathname.charAt(0) === '/' ? pathname : ('/' + pathname);
+
+        return this._get(`${this._ROOT}${_pathname}`);
+    }
+
+    public isLocalRoot(): boolean {
+        if (this._ROOT.startsWith('http://localhost')) {
+            return true;
+        }
+
+        return false;
+    }
+    
+    public setToProdRoot(): void {
+        this._ROOT = ALL_ORIGINS_ROOT;
+    }
+
+    public ping(): Promise<boolean> {
+        return this.get('/ping').then(() => {
+            return true;
+        }).catch(error => {
+            console.error(error);
+            return false;
+        });
+    }
+    
+
     // source: https://github.com/4chan/4chan-API/blob/master/pages/Boards.md
     public getBoards(): Promise<string[]> {
-        return this.get(`${this._ROOT}/boards.json`).then((res: any) => {
+        return this.get(`/boards.json`).then((res: any) => {
             console.log(res);
 
             if (!res || !res.boards || !Array.isArray(res.boards)) {
@@ -142,7 +170,7 @@ export class DataService {
 
     // source: https://github.com/4chan/4chan-API/blob/master/pages/Threadlist.md
     public getPages(board: string): Promise<SimplifiedPage[]> {
-        return this.get(`${this._ROOT}/${board}/threads.json`).then((res: any) => {
+        return this.get(`/${board}/threads.json`).then((res: any) => {
             if (!res) {
                 return [];
             }
@@ -157,7 +185,7 @@ export class DataService {
     }
 
     public getThreads(board: string, pageNo: number): Promise<Thread[]> {
-        return this.get(`${this._ROOT}/${board}/${pageNo}.json`).then((res: any) => {
+        return this.get(`/${board}/${pageNo}.json`).then((res: any) => {
             if (!res || !res.threads || !Array.isArray(res.threads)) {
                 return [];
             }
@@ -201,7 +229,7 @@ export class DataService {
 
     // source: https://github.com/4chan/4chan-API/blob/master/pages/Threads.md
     public getFullThread(board: string, threadNO: number): Promise<Post[]> {
-        return this.get(`${this._ROOT}/${board}/thread/${threadNO}.json`).then((res: any) => {
+        return this.get(`/${board}/thread/${threadNO}.json`).then((res: any) => {
             if (!res || !res.posts || !Array.isArray(res.posts)) {
                 return [];
             }
@@ -282,8 +310,8 @@ export class DataService {
         };
 
         for (const part of htmlStringArray) {
-            // Skip closing tags for anchors/spans
-            if (part === '</a>' || part === '</span>') {
+            // Skip closing tags for anchors/spans/s
+            if (part === '</a>' || part === '</span>' || part === '</s>') {
                 continue;
             }
 
@@ -313,9 +341,23 @@ export class DataService {
                 // Assuming all hrefs are quotes, we can redirect to the site using the href
                 const href = hrefString ? (hrefString.substring(`href="`.length, hrefString.length - 1)) : undefined;
 
-                if (href) {
-                    el.href = `https://boards.4chan.org/${post.board}/thread/${post.resto || post.no}${href}`;
+                if (href && href.startsWith(`/${post.board}/`)) {
+                    // el.href = `https://boards.4chan.org/${post.board}/thread/${post.resto || post.no}${href}`;
+                    el.href = `https://boards.4chan.org${href}`;
+                } else {
+                    el.href = href;
                 }
+
+                continue;
+            }
+
+            // Get the anchor attributes, add text on next iteration
+            if (part.startsWith('<s>' || part.startsWith('<s '))) {
+                el.tag = 's';
+
+                const classMatch = part.match(/class="(.*?)"/);
+                const classString = classMatch && classMatch[0] || '';
+                el.class = classString ? (classString.substring(`class="`.length, classString.length - 1)) : undefined;
 
                 continue;
             }
@@ -346,8 +388,6 @@ export class DataService {
     }
 
     public getArrayTagsHtmlString(str:string): string[] {
-        // let element: 'span' | 'a' | 'br' = 'span';
-
         let current = '';
 
         const ary: string[] = [];

@@ -9,8 +9,14 @@ const app = express();
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
 
+app.get('ping', async (req: express.Request, res: express.Response) => {
+    return res.status(200).type('json').send({
+        message: 'ping success',
+    });
+});
+
 app.get('**', async (req: express.Request, res: express.Response) => {
-    const subPath = req.path.charAt(0) === '/' ? req.path : `/${req.path}`;//req.params.path;
+    const subPath = req.path.charAt(0) === '/' ? req.path : `/${req.path}`;
 
     const fullPath = `${ROOT}${subPath}`;
 
@@ -33,8 +39,8 @@ app.get('**', async (req: express.Request, res: express.Response) => {
 
         return res.status(500).send({
             error: error.message || "Unexpected error",
-        })
-    })
+        });
+    });
 });
 
 function run(): void {

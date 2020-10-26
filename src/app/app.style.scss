@@ -58,7 +58,7 @@
         }
 
         a.selected {
-            background: teal;
+            background: $primary;
             color: white;
         }
     }
@@ -83,7 +83,9 @@
     .top-nav-links {
         // Hide boards toggle (and links) and prevent end user from closing board select until they choose something
         a, a.boards-toggle {
-            display: none;
+            // display: none;
+            visibility: hidden;
+            pointer-events: none;
         }
     }
 }
@@ -115,8 +117,9 @@
         .top-nav-links {
             // Hide boards toggle and prevent end user from closing board select until they choose something
             a.boards-toggle {
-                // pointer-events: auto;
-                display: none;
+                visibility: hidden;
+                pointer-events: none;
+                // display: none;
             }
         }
     }
@@ -124,8 +127,9 @@
     .top-nav.boards-showing {
         display: flex;
         flex-direction: column;
+        flex-wrap: nowrap;
 
-        height: 100vh;
+        min-height: 100vh;
         // TODO: add var
 
         // Push everything else down (like the .top-nav-links)
@@ -141,27 +145,24 @@
             }
             // // Remove aligning to the right since when this link wraps, it looks odd on small devices
             a.boards-toggle {
-                // pointer-events: auto;
+                pointer-events: auto;
                 display: block;
             }
         }
     }
 
     .top-nav.no-board-selected.boards-showing {
-        a.boards-toggle {
-            display: block;
+        .top-nav-links {
+            a.boards-toggle {
+                visibility: hidden;
+                pointer-events: none;
+            }
         }
     }
 }
 
 @media only screen and (max-width: 400px) {
     .top-nav {
-        display: flex;
-        flex-direction: column;
-
-        height: 100vh;
-        // TODO: add var
-
         .boards {
             flex-grow: 1;
         }

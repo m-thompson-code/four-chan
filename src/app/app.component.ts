@@ -22,7 +22,6 @@ export class AppComponent implements OnInit, OnDestroy {
         [board: string]: boolean;
     } = {};
 
-    // public pages: Page[] = [];
     public threads: Thread[] = [];
 
     public blockThreadMap: {
@@ -34,6 +33,8 @@ export class AppComponent implements OnInit, OnDestroy {
     } = {};
 
     private getThreadsLoopTimeout?: number;
+
+    public initalized: boolean = false;
 
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
@@ -200,30 +201,45 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public init(): void {
-        const cachedBoards = this.storageService.getItem("__cached_boards");
-        const selectedBoards = cachedBoards && JSON.parse(cachedBoards) || [];
-
-        if (selectedBoards.length) {
-            for (const selectedBoard of selectedBoards) {
-                this.toggleBoard(selectedBoard);
-            }
-        } else {
-            this.showBoards = true;
-        }
-        
-        const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
-
-        // Cache only lives for 2 hours
-        if (_cachedAt && _cachedAt < Date.now() - 1000 * 60 * 60 * 2) {
-            this._clearBlocks();
-        } else {
-            const _cache = this.storageService.getItem("__block_thread_map");
-            this.blockThreadMap = _cache && JSON.parse(_cache) || {};
-        }
-        
         this.loaderService.inc();
 
-        void this.getBoards().then(() => {
+        const promises: Promise<any>[] = [];
+
+        if (this.dataService.isLocalRoot()) {
+            promises.push(this.dataService.ping().then(success => {
+                if (!success) {
+                    console.warn("Local server ping wasn't successful, falling back to production root instead");
+                    this.dataService.setToProdRoot();
+                }
+            }));
+        }
+
+        void Promise.all(promises).then(() => {
+            const cachedBoards = this.storageService.getItem("__cached_boards");
+            const selectedBoards = cachedBoards && JSON.parse(cachedBoards) || [];
+
+            if (selectedBoards.length) {
+                for (const selectedBoard of selectedBoards) {
+                    this.toggleBoard(selectedBoard);
+                }
+            } else {
+                // Choose to not show the board just yet. Instead we have a message to new viewers
+                // this.showBoards = true;
+            }
+            
+            const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
+
+            // Cache only lives for 2 hours
+            if (_cachedAt && _cachedAt < Date.now() - 1000 * 60 * 60 * 2) {
+                this._clearBlocks();
+            } else {
+                const _cache = this.storageService.getItem("__block_thread_map");
+                this.blockThreadMap = _cache && JSON.parse(_cache) || {};
+            }
+            
+            return this.getBoards();
+        }).then(() => {
+            this.initalized = true;
             return this.getThreadsLoop(true);
         }).then(() => {
             this.loaderService.dec();
@@ -241,7 +257,6 @@ export class AppComponent implements OnInit, OnDestroy {
         for (let i = 0; i < this.threads.length; i++) {
             const thread = this.threads[i];
 
-            // console.log(thread.visibility);
             if (!thread.visibility || thread.visibility.bottomRatio > 0) {
                 break;
             }

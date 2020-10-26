@@ -1,5 +1,5 @@
 <div #postDiv>
-    <div>
+    <div class="header">
         <a [href]="'https://boards.4chan.org/' + post.board + '/thread/' + (post.resto || post.no) + '#p' + post.no" target="_blank">
             <span>
                 {{ post.no }}
@@ -71,6 +71,7 @@
             <br *ngIf="htmlPart.tag === 'br'">
             <a *ngIf="htmlPart.tag === 'a'" [href]="htmlPart.href" [class]="htmlPart.class">{{ htmlPart.text }}</a>
             <span *ngIf="htmlPart.tag === 'span'" [class]="htmlPart.class">{{ htmlPart.text }}</span>
+            <s *ngIf="htmlPart.tag === 's'" [class]="htmlPart.class">{{ htmlPart.text }}</s>
         </ng-container>
         <br><a class="html-toggle" (click)="post.htmlStrExpanded = !post.htmlStrExpanded">(?)</a>
     </div>

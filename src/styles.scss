@@ -1,9 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'styles/variables.scss';
 
-$primary: teal;
-$white: white;
-$backgroundColor: #121212;
-$spacing: 32px;
+/* You can add global styles to this file, and also import other style files */
 
 :root {
     --app-height-100: 100vh;
@@ -45,9 +42,10 @@ body {
 
     width: 100%;
 
-    // font-family: Roboto, "Helvetica Neue", sans-serif;
-
-    font: 400 16px/22px Roboto, "Helvetica Neue", sans-serif;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-weight: 400;
+    font-size: 14;
+    line-height: 1.375;
 }
 
 // source: https://bugs.webkit.org/show_bug.cgi?id=153852 (Kareem Darkazanli 2020-04-01 19:37:31 PDT)
@@ -173,15 +171,6 @@ div, a {
     -webkit-tap-highlight-color: transparent;
 }
 
-// .moo-slides-container {
-//     .slides {
-//         .slide {
-//             padding: 0 10vw;
-//             box-sizing: border-box;
-//         }
-//     }
-// }
-
 svg {
     fill: currentColor;
 }
@@ -200,6 +189,25 @@ img, video {
 
 .green, .quote {
     color: #789922;
+}
+
+s, s a:not(:hover) {
+    // color: #000!important;
+    // background: #000!important;
+    color: white!important;
+    background: white!important;
+    text-decoration: none;
+    padding: 0 4px;
+}
+
+s:hover, s:focus, s:hover a {
+    // color: #fff!important;
+    color: black !important;
+}
+
+.deadlink {
+    color: #d00!important;
+    text-decoration: underline;
 }
 
 .debug {

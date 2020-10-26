@@ -7,6 +7,10 @@
     height: auto;
 }
 
+.header {
+    margin-bottom: $spacing/4;
+}
+
 img {
     max-width: 100%;
     // height: auto;// Removed to allow for the height attr on image to allow for proper sizing when img renders before loading
@@ -14,10 +18,12 @@ img {
 
 .image-container {
     cursor: pointer;
+    margin-bottom: $spacing/4;
 }
 
 .comment {
-    line-height: 1.2;
+    line-height: 1.375;
+    margin-bottom: $spacing/2;
 }
 
 .comment-html-string {
@@ -33,6 +39,7 @@ img {
 
 .html-toggle {
     font-size: .5em;
+    display: none;
 }
 
 span, a {
