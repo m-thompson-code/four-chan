@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --open --progress",
     "server": "npm run --prefix server serve",
+    "deploy-server": "npm run --prefix server deploy",
     "serve": "npm run build && npm run start-prod",
     "build": "ng build --prod",
     "start-prod": "http-server dist/four-chan -o",

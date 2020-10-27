@@ -6,10 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rimraf dist",
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "start": "node dist/index",
-    "serve": "npm run clean && npm run build && npm run start",
-    "deploy": "git diff --exit-code && git push heroku master"
+    "serve": "npm run build && npm run start",
+    "deploy": "npm run build && git diff --exit-code && git push heroku master"
   },
   "keywords": [],
   "author": "",
