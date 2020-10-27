@@ -257,8 +257,8 @@ s:hover, s:focus, s:hover a {
 }
 
 .fade-in {
-    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fade-in-animation 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fade-in-animation 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .error-color {
