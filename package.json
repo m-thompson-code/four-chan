@@ -5,11 +5,12 @@
     "ng": "ng",
     "start": "ng serve --open --progress",
     "server": "npm run --prefix server serve",
-    "deploy-server": "npm run --prefix server deploy",
     "serve": "npm run build && npm run start-prod",
     "build": "ng build --prod",
+    "build-server": "npm run --prefix server build",
     "start-prod": "http-server dist/four-chan -o",
     "deploy": "npm run build && firebase deploy --only hosting",
+    "deploy-server": "npm run --prefix server deploy",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
