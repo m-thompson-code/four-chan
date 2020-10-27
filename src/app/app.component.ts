@@ -239,7 +239,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public getThreadsLoop(): Promise<void> {
         clearTimeout(this.getThreadsLoopTimeout);
 
-        if (this.threads.length > 300) {
+        if (this.threads.length > Math.min(720, this.boards.length * 120)) {
             this.getThreadsLoopTimeout = window.setTimeout(() => {
                 this.getThreadsLoop();
             }, 10 * 1000);

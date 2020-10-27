@@ -46,8 +46,8 @@ export class ThreadComponent implements OnInit {
             // Starting position of element on document
             const _rY = relativeY + posY;
 
-            // Scroll to top of thread but make room for the buttons above and add padding (200px)
-            window.scrollTo(0, _rY - 200);
+            // Scroll to top of thread but make room for the buttons above and add padding (160px)
+            window.scrollTo(0, _rY - 160);
         }
     }
 
