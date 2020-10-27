@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from '@environment';
 
 import { Post } from '@app/services/data.service';
+import { ScrollService } from '@app/services/scroll.service';
 
 @Component({
     selector: 'moo-post',
@@ -13,7 +14,7 @@ export class PostComponent implements OnInit {
     @Input() closeable: boolean = false;
     @Output() closeSelected: EventEmitter<void> = new EventEmitter();
 
-    constructor() {
+    constructor(private scrollService: ScrollService) {
     }
 
     public ngOnInit(): void {
@@ -34,6 +35,8 @@ export class PostComponent implements OnInit {
         }
 
         post.expanded = !post.expanded;
+
+        this.scrollService.checkScroll();
 
         if (div) {
             const posY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
