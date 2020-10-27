@@ -37,19 +37,24 @@
     width: 100%;
 }
 
-moo-button, .board-text, .board-link {
+moo-button, .board-text, .board-link, .page-load-setting {
     padding: $spacing/4;
 }
 
-.board-text {
+.page-load-setting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    moo-button {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.board-text, .page-load-setting {
     width: 100%;
     box-sizing: border-box;
-
-    margin-bottom: $spacing/2;
-
-    .mobile-board-text {
-        display: none;
-    }
 }
 
 .boards-toggle {
@@ -130,8 +135,12 @@ moo-button, .board-text, .board-link {
 }
 
 @media only screen and (max-width: 800px) {
-    moo-button, .board-text, .board-link {
+    moo-button, .board-text, .board-link, .page-load-setting {
         padding: $spacing/8;
+    }
+
+    .page-load-setting-text {
+        width: 100%;
     }
 
     .board-text {

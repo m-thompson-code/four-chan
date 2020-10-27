@@ -57,12 +57,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private _errorCountInterval?: number;
 
+    public pagesToLoad: number = 1;
+
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
         public loaderService: LoaderService) {
     }
 
     public ngOnInit(): void {
+        this.pagesToLoad = +(this.storageService.getItem('__cached_pages_to_load') || 1);
+
         this.agreeToTerms = this.storageService.getItem('__cached_agree_to_terms') || '';
 
         if (!this.agreeToTerms) {
@@ -116,7 +120,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         const promises: Promise<any>[] = [];
 
-        let pages = [2, 1];
+        let pages = [3, 2, 1];
 
         for (const page of pages) {
             promises.push(this.dataService.getThreads(board, page).then(threads => {
@@ -271,9 +275,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public init(): void {
         this.loaderService.inc();
 
-        const promises: Promise<any>[] = [];
-
-        void Promise.all(promises).then(() => {
+        void this.getBoards().then(() => {
             const cachedBoards = this.storageService.getItem("__cached_boards");
             const selectedBoards = cachedBoards && JSON.parse(cachedBoards) || [];
 
@@ -292,8 +294,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 const _cache = this.storageService.getItem("__block_thread_map");
                 this.blockThreadMap = _cache && JSON.parse(_cache) || {};
             }
-            
-            return this.getBoards();
         }).then(() => {
             this.initalized = true;
             return this.getThreadsLoop();
@@ -608,6 +608,11 @@ export class AppComponent implements OnInit, OnDestroy {
             'func_name': funcName,
             'error': error.message || "unknown",
         });
+    }
+
+    public setPagesToLoad(num: number): void {
+        this.pagesToLoad = num;
+        this.storageService.setItem('__cached_pages_to_load', "" + num);
     }
 
     public ngOnDestroy(): void {

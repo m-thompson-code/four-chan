@@ -5,13 +5,17 @@
         <moo-button [hasBackground]="true" (click)="closeAllThreads()" icon="hourglass_full">Snooze all</moo-button>
         <moo-button [hasBackground]="true" (click)="clearThreadsAbove()" icon="hourglass_top">Snooze above</moo-button>
         <!-- <a (click)="clearBlocks()">Clear blocks</a> -->
-        <moo-button [hasBackground]="true" class="boards-toggle" (click)="showBoards = !showBoards" [icon]="showBoards ? 'expand_less' : 'expand_more'">{{ showBoards ? 'Close boards' : 'Boards' }}</moo-button>
+        <moo-button [hasBackground]="true" class="boards-toggle" (click)="showBoards = !showBoards" [icon]="showBoards ? 'expand_less' : 'expand_more'">{{ showBoards ? 'Close boards' : 'Settings' }}</moo-button>
     </div>
 
     <div *ngIf="showBoards" class="boards">
+        <div class="page-load-setting">
+            <div class="page-load-setting-text">Pages to reload</div>
+            <moo-button *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [hasBackground]="num === pagesToLoad" (click)="setPagesToLoad(num)">{{ num }}</moo-button>
+        </div>
+
         <div class="board-text">
             Select one or more boards. Close boards once you're done
-            <!-- Select one or more boards<span class="mobile-board-text">. Close boards once you're done</span> -->
         </div>
 
         <div class="board-buttons">

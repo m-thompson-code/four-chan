@@ -354,8 +354,9 @@ export class DataService {
                 // Assuming all hrefs are quotes, we can redirect to the site using the href
                 const href = hrefString ? (hrefString.substring(`href="`.length, hrefString.length - 1)) : undefined;
 
-                if (href && href.startsWith(`/${post.board}/`)) {
-                    // el.href = `https://boards.4chan.org/${post.board}/thread/${post.resto || post.no}${href}`;
+                if (href && href.startsWith(`#p`)) {
+                    el.href = `https://boards.4chan.org/${post.board}/thread/${post.resto || post.no}${href}`;
+                } else if (href && href.startsWith(`/${post.board}/`)) {
                     el.href = `https://boards.4chan.org${href}`;
                 } else {
                     el.href = href;
