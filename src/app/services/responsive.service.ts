@@ -39,7 +39,6 @@ export class ResponsiveService {
     }
 
     private _getOnresize(): void {
-        // console.log("_getOnresize");
         this.responsiveMetadata = this._getResponsiveMetadata();
         this._subject.next(this.responsiveMetadata);
     }

@@ -60,8 +60,6 @@ export class ScrollService {
     private _scrollTo(newY: number, oldY?: number, ms: number = 0, maxMS: number = 400): void {
         const _oldY = oldY || this.getScrollPosition();
 
-        // console.log('scrollTo', newY, _oldY, ms, maxMS);
-
         const frame = 1000 / 60; // ~16.67 ms
 
         let _ms = ms + frame;

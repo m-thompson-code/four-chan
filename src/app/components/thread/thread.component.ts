@@ -35,11 +35,9 @@ export class ThreadComponent implements OnInit {
     }
 
     public scrollToTopOfThread(): void {
-        console.log('scrollToTop');
         if (this._threadDiv) {
             const posY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
 
-            console.log(this._threadDiv.nativeElement);
             const _rBox = this._threadDiv.nativeElement.getBoundingClientRect();
 
             // Element vertical position relative to current scroll position on document

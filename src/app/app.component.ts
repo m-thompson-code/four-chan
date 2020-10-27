@@ -73,7 +73,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.scrollService.init(this.renderer);
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
-            console.log('APP', value);
             this.threadInView = this._getThreadInView();
         });
 

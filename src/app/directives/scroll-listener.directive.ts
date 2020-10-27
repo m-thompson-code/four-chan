@@ -94,8 +94,6 @@ export class ScrollListenerDirective implements OnInit {
     }
 
     public scrollToTop() {
-        // console.log(this.element);
-
         const e = this.element.nativeElement;
 
         const _rBox = e.getBoundingClientRect();
@@ -118,8 +116,6 @@ export class ScrollListenerDirective implements OnInit {
 
     public scrollToBottom() {
         const windowHeight = window.innerHeight;
-
-        // console.log(this.element);
 
         const e = this.element.nativeElement;
 
