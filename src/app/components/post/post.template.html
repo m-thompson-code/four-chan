@@ -25,20 +25,20 @@
         <ng-container *ngIf="!post.spoiler">
             <div *ngIf="!post.expanded || !dimensionsLoaded">
                 <img [src]="post.thumbnailUrl" [attr.width]="'' + post.tn_w + 'px'" [style.height]="'' + post.tn_h + 'px'" 
-                 [style.width]="'' + post.tn_w + 'px'" [style.height]="'' + post.tn_h + 'px'" loading="lazy">
+                 [style.width]="'' + post.tn_w + 'px'" [style.height]="'' + post.tn_h + 'px'" loading="lazy" [alt]="post.thumbnailUrl">
             </div>
             
             <div *ngIf="post.expanded && dimensionsLoaded">
                 <img *ngIf="post.ext === '.jpg' || post.ext === '.png' || post.ext === '.gif'" 
                     [src]="post.imageUrl" [attr.width]="'' + post.w + 'px'" [attr.height]="'' + post.h + 'px'" [style.width]="'' + post.w + 'px'" 
-                    mooKeepRatio [ratioWidth]="post.w" [ratioHeight]="post.h" [basedOnWidth]="true">
+                    mooKeepRatio [ratioWidth]="post.w" [ratioHeight]="post.h" [basedOnWidth]="true" [alt]="post.imageUrl">
                 <video *ngIf="post.ext === '.webm'" 
                     [src]="post.imageUrl" [attr.width]="'' + post.w + 'px'" [attr.height]="'' + post.h + 'px'" [style.width]="'' + post.w + 'px'" controls loop autoplay 
                     mooKeepRatio [ratioWidth]="post.w" [ratioHeight]="post.h" [basedOnWidth]="true"></video>
             </div>
 
             <div *ngIf="post.ext === '.swf'">
-                Other extension found: {{ post.ext }} <a [href]="post.imageUrl">{{ post.imageUrl }}</a>
+                No support extension found: {{ post.ext }} <a [href]="post.imageUrl">{{ post.imageUrl }}</a>
             </div>
             <div *ngIf="post.ext !== '.jpg' && post.ext !== '.png' && post.ext !== '.gif' && post.ext !== '.swf' && post.ext !== '.webm'">
                 Unexpected extension found: {{ post.ext }} <a href="post.imageUrl">post.imageUrl</a>

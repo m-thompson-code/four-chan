@@ -9,9 +9,15 @@ const app = express();
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
 
-app.get('ping', async (req: express.Request, res: express.Response) => {
+app.get('/', async (req: express.Request, res: express.Response) => {
     return res.status(200).type('json').send({
-        message: 'ping success',
+        message: 'ping success (0)',
+    });
+});
+
+app.get('/ping', async (req: express.Request, res: express.Response) => {
+    return res.status(200).type('json').send({
+        message: 'ping success (1)',
     });
 });
 
@@ -19,8 +25,6 @@ app.get('**', async (req: express.Request, res: express.Response) => {
     const subPath = req.path.charAt(0) === '/' ? req.path : `/${req.path}`;
 
     const fullPath = `${ROOT}${subPath}`;
-
-    console.log(fullPath);
 
     return axios.get(fullPath).then(_res => {
         return res.status(200).type('json').send(_res?.data);

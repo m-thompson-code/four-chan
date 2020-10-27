@@ -44,7 +44,7 @@ body {
 
     font-family: Roboto, "Helvetica Neue", sans-serif;
     font-weight: 400;
-    font-size: 14;
+    font-size: 14px;
     line-height: 1.375;
 }
 
@@ -163,12 +163,26 @@ a {
     cursor: pointer;
     text-decoration: none;
     color: $primary;
+    transition: color 400ms cubic-bezier(0.4, 0, 0.2, 1), background 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+a:visited {
+    color: map-get($primaryDarken, 20);
+}
+a:hover {
+    color: map-get($primaryLighten, 20);
+}
+a:focus {
+    color: map-get($primaryDarken, 40);
+}
+a:active {
+    color: map-get($primaryDarken, 30);
 }
 
 // Remove (ugly) highlight styles on tap
-div, a {
+div, span, a, video, iframe {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-tap-highlight-color: transparent;
+    outline: none !important;
 }
 
 svg {
@@ -206,12 +220,12 @@ s:hover, s:focus, s:hover a {
 }
 
 .deadlink {
-    color: #d00!important;
+    color: $error!important;
     text-decoration: underline;
 }
 
 .debug {
     font-size: 40px;
     background: white;
-    color: red;
+    color: $error;
 }

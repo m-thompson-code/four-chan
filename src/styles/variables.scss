@@ -1,5 +1,39 @@
+@use "sass:map";
+
+$touchAccessibile: 48px;
 $spacing: 32px;
 
 $primary: #4DCECF;//teal;
+// Theme: https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=D32F2F&secondary.color=455A64
+$error: #CF6679;
+
+$primaryLighten: (
+    10: scale-color($color: $primary, $lightness: 10%),
+    20: scale-color($color: $primary, $lightness: 20%),
+    30: scale-color($color: $primary, $lightness: 30%),
+    40: scale-color($color: $primary, $lightness: 40%),
+    50: scale-color($color: $primary, $lightness: 50%),
+    60: scale-color($color: $primary, $lightness: 60%),
+    70: scale-color($color: $primary, $lightness: 70%),
+    80: scale-color($color: $primary, $lightness: 80%),
+    90: scale-color($color: $primary, $lightness: 90%),
+    100: scale-color($color: $primary, $lightness: 100%),
+);
+
+$primaryDarken: (
+    10: scale-color($color: $primary, $lightness: -10%),
+    20: scale-color($color: $primary, $lightness: -20%),
+    30: scale-color($color: $primary, $lightness: -30%),
+    40: scale-color($color: $primary, $lightness: -40%),
+    50: scale-color($color: $primary, $lightness: -50%),
+    60: scale-color($color: $primary, $lightness: -60%),
+    70: scale-color($color: $primary, $lightness: -70%),
+    80: scale-color($color: $primary, $lightness: -80%),
+    90: scale-color($color: $primary, $lightness: -90%),
+    100: scale-color($color: $primary, $lightness: -100%),
+);
+
 $white: white;
 $backgroundColor: #121212;
+
+$borderColor: scale-color($color: $backgroundColor, $lightness: 10%);

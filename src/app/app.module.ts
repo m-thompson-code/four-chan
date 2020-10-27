@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { ButtonModule } from '@app/components/button';
 import { ThreadModule } from '@app/components/thread';
 
 import { DirectivesModule } from '@app/directives';
@@ -20,6 +21,7 @@ import { ServicesModule } from '@app/services';
         HttpClientModule,
         AppRoutingModule,
 
+        ButtonModule,
         ThreadModule,
 
         DirectivesModule,

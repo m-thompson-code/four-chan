@@ -1,0 +1,78 @@
+@use "sass:map";
+
+@import 'styles/variables.scss';
+
+a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: $touchAccessibile;
+    min-width: $touchAccessibile;
+
+    span {
+        background: transparent;
+        color: $primary;
+    
+        padding: ($spacing/6) ($spacing/3);
+        border-radius: $spacing/3;
+    
+        transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1), background 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+a:visited {
+    span {
+        background: transparent;
+        color: map-get($primaryDarken, 20);
+    }
+}
+a:hover {
+    span {
+        background: rgba($primary, .1);
+        color: map-get($primaryLighten, 20);
+    }
+}
+a:focus {
+    span {
+        background: rgba($primary, .2);
+        color: map-get($primaryLighten, 20);
+    }
+}
+a:active {
+    span {
+        background: rgba($primary, .6);
+        color: white;
+    }
+}
+
+a.with-background {
+    span {
+        background: $primary;
+        color: white;
+    }
+}
+a.with-background:visited {
+    span {
+        background: map-get($primaryDarken, 10);
+        color: map-get($primaryLighten, 90);
+    }
+}
+a.with-background:hover {
+    span {
+        background: map-get($primaryLighten, 30);
+        color: white;
+    }
+}
+a.with-background:focus {
+    span {
+        background: map-get($primaryDarken, 20);
+        color: map-get($primaryLighten, 90);
+    }
+}
+a.with-background:active {
+    span {
+        background: map-get($primaryDarken, 30);
+        color: map-get($primaryLighten, 80);
+    }
+}
+// border-radius: $spacing/6;

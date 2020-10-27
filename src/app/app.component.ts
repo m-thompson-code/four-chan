@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { environment } from '@environment';
 import { Subscription } from 'rxjs';
 
 import { DataService, Post, Thread } from './services/data.service';
@@ -60,10 +61,11 @@ export class AppComponent implements OnInit, OnDestroy {
                 doc.style.setProperty('--app-height-95', `${windowHeight * .95}px`);
                 doc.style.setProperty('--app-height-50', `${windowHeight * .5}px`);
             } catch(error) {
-                // if (environment.env !== 'prod') {
-                    console.error(error);
+                console.error(error);
+
+                if (!environment.production) {
                     debugger;
-                // }
+                }
             }
         }
 
@@ -172,7 +174,10 @@ export class AppComponent implements OnInit, OnDestroy {
             // pass
         }).catch(error => {
             console.error(error);
-            debugger;
+
+            if (!environment.production) {
+                debugger;
+            }
         }).then(() => {
             this.loaderService.dec();
         });
@@ -207,7 +212,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public getThreadsLoop(full: boolean): Promise<void> {
         clearTimeout(this.getThreadsLoopTimeout);
 
-        if (this.threads.length > 1000) {
+        if (this.threads.length > 600) {
             this.getThreadsLoopTimeout = window.setTimeout(() => {
                 this.getThreadsLoop(false);
             }, 10 * 1000);
@@ -239,14 +244,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
         const promises: Promise<any>[] = [];
 
-        if (this.dataService.isLocalRoot()) {
-            promises.push(this.dataService.ping().then(success => {
-                if (!success) {
-                    console.warn("Local server ping wasn't successful, falling back to production root instead");
-                    this.dataService.setToProdRoot();
-                }
-            }));
-        }
+        // if (this.dataService.isLocalRoot()) {
+        //     promises.push(this.dataService.pingLocalServer().then(success => {
+        //         if (!success) {
+        //             console.warn("Local server ping wasn't successful, falling back to production root instead");
+        //             this.dataService.setToProdRoot();
+        //         }
+        //     }));
+        // }
 
         void Promise.all(promises).then(() => {
             const cachedBoards = this.storageService.getItem("__cached_boards");
@@ -452,7 +457,10 @@ export class AppComponent implements OnInit, OnDestroy {
             }
         }).catch(error => {
             console.error(error);
-            debugger;
+
+            if (!environment.production) {
+                debugger;
+            }
         }).then(() => {
             this.loaderService.dec();
         });

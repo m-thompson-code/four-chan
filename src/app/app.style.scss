@@ -1,93 +1,74 @@
 @import 'styles/variables.scss';
 
-.line-break {
-    width: 100%;
-    border-bottom: 1px solid grey;
-    margin-bottom: $spacing;
-}
-
-.line-break.top {
-    margin-top: $spacing * 2;
-}
-
-.thread-header, .top-nav {
-    display: flex;
-    flex-wrap: wrap;
-
-    padding: 0 $spacing/4;
-    box-sizing: border-box;
-
-    max-height: 100vh;
-    max-height: var(--app-height-100);
-
-    overflow: auto;
-
-    span, a {
-        display: block;
-        margin-right: $spacing;
-    }
-    a:last-child {
-        margin-right: 0;
-    }
-}
-
 .top-nav {
     position: fixed;
     top: 0;
     left: 0;
 
-    background: #121212;
+    background: $backgroundColor;
     width: 100%;
+
     z-index: 1;
 
     overflow: hidden;
+    box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.2), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+}
 
-    .boards {
-        display: flex;
-        flex-wrap: wrap;
+.boards {
+    display: flex;
+    flex-wrap: wrap;
 
-        width: 100%;
+    width: 100%;
 
-        margin-bottom: $spacing/2;
-        margin-left: -$spacing/4;
-        margin-right: -$spacing/4;
-        
-        a {
-            padding: $spacing/4;
-            border-radius: $spacing/6;
-        }
+    margin-bottom: $spacing/2;
+}
+    
+.top-nav-links {
+    display: flex;
+    flex-wrap: wrap;
 
-        a.selected {
-            background: $primary;
-            color: white;
-        }
-    }
-        
-    .top-nav-links {
-        display: flex;
-        flex-wrap: wrap;
+    width: 100%;
+}
 
-        width: 100%;
-
-        .boards-toggle {
-            // Aligning to the right
-            // source: https://stackoverflow.com/questions/35269947/css-align-one-item-right-with-flexbox
-            margin-left: auto;
-        }
-    }
-
+a, moo-button, .board-text {
     padding: $spacing/4;
 }
 
-.top-nav.no-board-selected {
-    .top-nav-links {
-        // Hide boards toggle (and links) and prevent end user from closing board select until they choose something
-        a, a.boards-toggle {
-            // display: none;
-            visibility: hidden;
-            pointer-events: none;
-        }
+.board-text {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.boards-toggle {
+    // Aligning to the right
+    // source: https://stackoverflow.com/questions/35269947/css-align-one-item-right-with-flexbox
+    margin-left: auto;
+}
+
+.thread-header, .top-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.top-nav-links.no-board-selected {
+    // Hide boards toggle (and links) and prevent end user from closing board select until they choose something
+    a, moo-button {
+        visibility: hidden;
+        pointer-events: none;
     }
+    a.boards-toggle, moo-button.boards-toggle {
+        visibility: visible;
+        pointer-events: auto;
+    }
+}
+
+.top-nav.boards-showing {
+    border-bottom: 1px solid $borderColor;
+}
+
+.line-break {
+    width: 100%;
+    border-bottom: 1px solid $borderColor;
 }
 
 .loader {
@@ -103,29 +84,9 @@
     margin-top: $spacing * 3;
 }
 
-.board-text {
-    width: 100%;
-}
-
 @media only screen and (max-width: 800px) {
-    .thread-header, .top-nav {
-        span, a {
-            margin-right: $spacing/2;
-        }
-        a:last-child {
-            margin-right: 0;
-        }
-    }
-
-    .top-nav.no-board-selected {
-        .top-nav-links {
-            // Hide boards toggle and prevent end user from closing board select until they choose something
-            a.boards-toggle {
-                visibility: hidden;
-                pointer-events: none;
-                // display: none;
-            }
-        }
+    a, moo-button, .board-text {
+        padding: $spacing/8;
     }
 
     .top-nav.boards-showing {
@@ -133,49 +94,23 @@
         flex-direction: column;
         flex-wrap: nowrap;
 
-        min-height: 100vh;
-        min-height: var(--app-height-100);
+        height: 100vh;
+        height: var(--app-height-100);
+        overflow: auto;
 
-        // Push everything else down (like the .top-nav-links)
-        .boards {
-            margin-bottom: auto;
-        }
-
-        .top-nav-links {
-            // Hide all the links if boards is toggled
-            a {
-                // pointer-events: none;
-                display: none;
-            }
-            // // Remove aligning to the right since when this link wraps, it looks odd on small devices
-            a.boards-toggle {
-                pointer-events: auto;
-                display: block;
-            }
-        }
-    }
-
-    .top-nav.no-board-selected.boards-showing {
-        .top-nav-links {
-            a.boards-toggle {
-                visibility: hidden;
-                pointer-events: none;
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 400px) {
-    .top-nav {
+        // Push the board buttons down if there's space
         .boards {
             flex-grow: 1;
-        }
-
-        .top-nav-links {
-            // Remove aligning to the right since when this link wraps, it looks odd on small devices
-            .boards-toggle {
-                margin-left: 0;
-            }
+            margin-top: auto;
+            margin-bottom: 0;
         }
     }
 }
+
+// @media only screen and (max-width: 400px) {
+//     .top-nav {
+//         .boards {
+//             flex-grow: 1;
+//         }
+//     }
+// }

@@ -5,16 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf dist && tsc",
+    "clean": "rimraf dist",
+    "build": "tsc",
     "start": "node dist/index",
-    "serve": "npm run build && npm run start"
+    "serve": "npm run clean && npm run build && npm run start",
+    "deploy": "git diff --exit-code && git push heroku master"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.8",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.5"
   },
   "dependencies": {
     "axios": "^0.21.0",

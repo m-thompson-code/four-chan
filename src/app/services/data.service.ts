@@ -1,18 +1,23 @@
-import { Injectable, Renderer2 } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Visibility } from '@app/directives/scroll-listener.directive';
 
 import { environment } from '@environment';
 
-// /server/*
-const LOCAL_ROOT = 'http://localhost:5001';// Used when running the server express app in parallel to this angular app running
-
 // source: https://github.com/4chan/4chan-API/blob/master/pages/Endpoints_and_domains.md
-// const FOUR_CHAN_ROOT = 'https://boards.4chan.org';// What is supposed to be the endpoint, but because of Redirects, browsers won't allow it
+// What is supposed to be the endpoint, but because of Redirects found in the preflight request, modern browsers won't allow it due to COR
+// const FOUR_CHAN_ROOT = 'https://boards.4chan.org';/
 
+// Workaround for COR issue
 // source: https://github.com/gnuns/allOrigins
-const ALL_ORIGINS_ROOT = `https://api.allorigins.win/get?charset=ISO-8859-1&url=${encodeURIComponent('https://boards.4chan.org')}`;// Workaround found online
+const ALL_ORIGINS_ROOT = `https://api.allorigins.win/get?charset=ISO-8859-1&url=${encodeURIComponent('https://boards.4chan.org')}`;
+
+// Used when running the server express app in parallel to this angular app running
+const LOCAL_ROOT = 'http://localhost:5001';
+
+// Used for production if allorigins fails
+const SERVER_ROOT = `https://four-chan-server.herokuapp.com`;
 
 export interface ParsedHtmlElement {
     tag: string;
@@ -90,21 +95,23 @@ export class DataService {
     }
 
     public _get(url: string): Promise<any> {
-        const headers = new HttpHeaders({
-            // 'Content-Type': 'application/json',
-            // 'Accept': 'application/json',
-            // 'Access-Control-Allow-Origin': '*',
-            // 'Access-Control-Allow-Origin': 'a.4cdn.org',
-            // 'Access-Control-Allow-Origin': 'https://a.4cdn.org',
-            // 'Access-Control-Allow-Origin': 'boards.4chan.org',
-            // 'Access-Control-Allow-Origin': 'https://boards.4chan.org',
-            // 'Access-Control-Allow-Origin': 'api.allorigins.win',
-            
-            // 'Access-Control-Allow-Headers': 'Content-Type',
-            // 'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-            // 'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
-            // 'Access-Control-Allow-Methods': 'GET',
-        });
+        let headerObj: {
+            [header_field: string]: string
+        } = {};
+
+        // request header field access-control-allow-origin is not allowed by Access-Control-Allow-Headers in preflight response for allorigin
+        // turns out allorigin doesn't like any headers, so let's send requests with empty headers for allorigin
+        if (this._ROOT !== ALL_ORIGINS_ROOT) {
+            headerObj = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
+            };
+        }
+
+        const headers = new HttpHeaders(headerObj);
 
         return this.httpClient.get(url, { 
             responseType: 'json', 
@@ -112,10 +119,12 @@ export class DataService {
         }).toPromise().then((res: any) => {
             let _res = res;
 
+            // allorigin's response from 4chan should be found on contents as a string
             if (res.contents) {
                 _res = res.contents;
             }
 
+            // Conditionally convert response from string to json as needed
             const json = typeof _res === 'string' ? JSON.parse(_res) : _res;
             return json;
         });
@@ -123,37 +132,36 @@ export class DataService {
 
     public get(pathname: string): Promise<any> {
         const _pathname = pathname.charAt(0) === '/' ? pathname : ('/' + pathname);
+        const ROOT = this._ROOT;
+        const url = `${ROOT}${_pathname}`;
 
-        return this._get(`${this._ROOT}${_pathname}`);
-    }
+        return this._get(url).catch(error => {
+            // If local server fails, try prod workflow instead
+            if (ROOT === LOCAL_ROOT) {
+                this._ROOT = ALL_ORIGINS_ROOT;
+                console.warn(error);
+                console.warn(url);
+                console.warn("local server request wasn't successful, falling back to allorigin");
+                return this.get(pathname);
+            }
 
-    public isLocalRoot(): boolean {
-        if (this._ROOT.startsWith('http://localhost')) {
-            return true;
-        }
+            // If allorigins fails, try prod server instead
+            if (ROOT !== SERVER_ROOT) {
+                this._ROOT = SERVER_ROOT;
+                console.warn(error);
+                console.warn(url);
+                console.warn("allorigin request wasn't successful, falling back to production server");
+                return this.get(pathname);
+            }
 
-        return false;
-    }
-    
-    public setToProdRoot(): void {
-        this._ROOT = ALL_ORIGINS_ROOT;
-    }
-
-    public ping(): Promise<boolean> {
-        return this.get('/ping').then(() => {
-            return true;
-        }).catch(error => {
             console.error(error);
-            return false;
+            throw error;
         });
     }
-    
 
     // source: https://github.com/4chan/4chan-API/blob/master/pages/Boards.md
     public getBoards(): Promise<string[]> {
         return this.get(`/boards.json`).then((res: any) => {
-            console.log(res);
-
             if (!res || !res.boards || !Array.isArray(res.boards)) {
                 return [];
             }
@@ -178,7 +186,10 @@ export class DataService {
             return res;
         }).catch(error => {
             console.error(error);
-            debugger;
+            
+            if (!environment.production) {
+                debugger;
+            }
 
             return [];
         });

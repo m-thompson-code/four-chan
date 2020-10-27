@@ -1,17 +1,17 @@
-<div *ngIf="selectedBoards.length || showBoards" [class]="'top-nav' + (showBoards ? ' boards-showing' : '') + (!selectedBoards.length ? ' no-board-selected' : '')">
-    <div *ngIf="showBoards" class="boards">
-        <div class="board-text">
-            Select as many boards as you'd like
-        </div>
-        
-        <a *ngFor="let board of boards" [class]="selectedBoardMap[board] ? 'selected' : ''" (click)="toggleBoard(board)">{{ board }}</a>
+<div *ngIf="selectedBoards.length || showBoards" [class]="'top-nav' + (showBoards ? ' boards-showing' : '')">
+    <div [class]="'top-nav-links' + (!selectedBoards.length ? ' no-board-selected' : '')">
+        <moo-button [hasBackground]="true" (click)="closeAllThreads()">Snooze all</moo-button>
+        <moo-button [hasBackground]="true" (click)="clearThreadsAbove()">Snooze above</moo-button>
+        <!-- <a (click)="clearBlocks()">Clear blocks</a> -->
+        <moo-button [hasBackground]="true" class="boards-toggle" (click)="showBoards = !showBoards">{{ showBoards ? 'Close boards' : 'Boards' }}</moo-button>
     </div>
 
-    <div class="top-nav-links">
-        <a (click)="closeAllThreads()">Snooze all</a>
-        <a (click)="clearThreadsAbove()">Snooze above</a>
-        <!-- <a (click)="clearBlocks()">Clear blocks</a> -->
-        <a class="boards-toggle" (click)="showBoards = !showBoards">{{ showBoards ? 'Close boards' : 'Boards' }}</a>
+    <div *ngIf="showBoards" class="boards">
+        <div class="board-text">
+            Select one or more boards
+        </div>
+
+        <moo-button [hasBackground]="!!selectedBoardMap[board]" *ngFor="let board of boards" [class]="selectedBoardMap[board] ? 'selected' : ''" (click)="toggleBoard(board)">{{ board }}</moo-button>
     </div>
 </div>
 
@@ -41,9 +41,9 @@
     <ng-container *ngFor="let thread of threads">
         <div class="thread-header">
             <a [href]="'https://boards.4channel.org/' + thread.board + '/'" *ngIf="selectedBoards.length > 1">/{{ thread.board }}/</a>
-            <a (click)="blockThread(thread)">Nope</a>
-            <a (click)="closeThread(thread)">Snooze</a>
-            <a (click)="loadFullPosts(thread)">Full load</a>
+            <moo-button [hasBackground]="true" (click)="blockThread(thread)">Delete</moo-button>
+            <moo-button [hasBackground]="true" (click)="closeThread(thread)">Snooze</moo-button>
+            <moo-button [hasBackground]="true" (click)="loadFullPosts(thread)">Expand</moo-button>
             <!-- <a *ngIf=" thread.mainPosts[0]?.no" [href]="'https://boards.4chan.org/' + thread.board + '/thread/' + thread.mainPosts[0].no + '#p' + thread.mainPosts[0].no" target="_blank">4chan.org</a> -->
         </div>
     
