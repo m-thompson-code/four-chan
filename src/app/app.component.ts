@@ -501,6 +501,10 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.pushPost(thread, post);
                 }
             }
+
+            thread.posts.sort((a, b) => {
+                return a.time - b.time;
+            });
         }).catch(error => {
             console.error(error);
 
