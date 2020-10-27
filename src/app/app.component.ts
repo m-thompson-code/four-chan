@@ -47,7 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.scrollService.init(this.renderer);
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
-            // console.log('APP', value);
+            console.log('APP', value);
         });
 
         // Handle getting screen height css variables
@@ -86,16 +86,12 @@ export class AppComponent implements OnInit, OnDestroy {
         void this.init();
     }
 
-    public getThreads(board: string, full: boolean): Promise<void> {
+    public getThreads(board: string): Promise<void> {
         this.loaderService.inc();
 
         const promises: Promise<any>[] = [];
 
         let pages = [1];
-
-        if (full) {
-            pages = [2, 1];
-        }
 
         for (const page of pages) {
             promises.push(this.dataService.getThreads(board, page).then(threads => {
@@ -146,15 +142,6 @@ export class AppComponent implements OnInit, OnDestroy {
                                         }
                                     }
     
-                                    // for (let i = 0; i < this.threads.length; i++) {
-                                    //     const _thread = this.threads[i];
-    
-                                    //     // Replace old _thread with new one
-                                    //     if (thread.mainPostNo === _thread.mainPostNo) {
-                                    //         this.threads[i] = thread;
-                                    //     }
-                                    // }
-    
                                     continue;
                                 }
                             }
@@ -204,17 +191,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.storageService.setItem('__cached_boards', JSON.stringify(this.selectedBoards));
 
-        if (!this.threads.length) {
-            this.getThreadsLoop(true);
-        }
+        this.softReload();
     }
 
-    public getThreadsLoop(full: boolean): Promise<void> {
+    public getThreadsLoop(): Promise<void> {
         clearTimeout(this.getThreadsLoopTimeout);
 
-        if (this.threads.length > 600) {
+        if (this.threads.length > 300) {
             this.getThreadsLoopTimeout = window.setTimeout(() => {
-                this.getThreadsLoop(false);
+                this.getThreadsLoop();
             }, 10 * 1000);
 
             return Promise.resolve();
@@ -223,13 +208,13 @@ export class AppComponent implements OnInit, OnDestroy {
         let promises: Promise<any>[] = [];
 
         for (let board of this.selectedBoards) {
-            promises.push(this.getThreads(board, full));
+            promises.push(this.getThreads(board));
         }
 
         return Promise.all(promises).then(() => {
             this.getThreadsLoopTimeout = window.setTimeout(() => {
-                this.getThreadsLoop(false);
-            }, 10 * 1000);
+                this.getThreadsLoop();
+            }, this.threads.length ? 10 * 1000 : 1000);
         });
     }
 
@@ -244,15 +229,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
         const promises: Promise<any>[] = [];
 
-        // if (this.dataService.isLocalRoot()) {
-        //     promises.push(this.dataService.pingLocalServer().then(success => {
-        //         if (!success) {
-        //             console.warn("Local server ping wasn't successful, falling back to production root instead");
-        //             this.dataService.setToProdRoot();
-        //         }
-        //     }));
-        // }
-
         void Promise.all(promises).then(() => {
             const cachedBoards = this.storageService.getItem("__cached_boards");
             const selectedBoards = cachedBoards && JSON.parse(cachedBoards) || [];
@@ -261,9 +237,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 for (const selectedBoard of selectedBoards) {
                     this.toggleBoard(selectedBoard);
                 }
-            } else {
-                // Choose to not show the board just yet. Instead we have a message to new viewers
-                // this.showBoards = true;
             }
             
             const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
@@ -279,15 +252,10 @@ export class AppComponent implements OnInit, OnDestroy {
             return this.getBoards();
         }).then(() => {
             this.initalized = true;
-            return this.getThreadsLoop(true);
+            return this.getThreadsLoop();
         }).then(() => {
             this.loaderService.dec();
         });
-    }
-
-    public clearThreads(): void {
-        this.threads = [];
-        // this.threadMap = {};
     }
 
     public clearThreadsAbove(): void {
@@ -305,9 +273,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.threads = this.threads.slice(index + 1);
 
-        if (!this.threads.length) {
-            this.getThreadsLoop(true);
-        }
+        this.softReload();
     }
 
     public addThread(thread: Thread): void {
@@ -316,15 +282,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public setThreads(threads: Thread[]): void {
-        this.clearThreads();
+        this.threads = [];
 
         for (const thread of threads) {
             this.addThread(thread);
         }
 
-        if (!this.threads.length) {
-            this.getThreadsLoop(true);
-        }
+        this.softReload();
     }
 
     public toggleImage(post: Post, div?: HTMLDivElement): void {
@@ -413,10 +377,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public closeAllThreads(): void {
-        this.clearThreads();
+        this.threads = [];
 
+        this.softReload();
+    }
+
+    public softReload(): void {
+        // Try to load more threads only if there's currently no threads
         if (!this.threads.length) {
-            this.getThreadsLoop(true);
+            this.getThreadsLoop();
         }
     }
 
@@ -441,19 +410,22 @@ export class AppComponent implements OnInit, OnDestroy {
         this.loaderService.inc();
 
         return this.dataService.getFullThread(board, mainPostNo).then(posts => {
-            thread.posts = [];
+            // Clear existing posts
+            // thread.posts = [];
+            const ignorePostNoMap: {
+                [no: number]: Post;
+            } = {};
+
+            for (const mainPost of thread.mainPosts) {
+                ignorePostNoMap[mainPost.no] = mainPost;
+            }
+
+            for (const oldPost of thread.posts) {
+                ignorePostNoMap[oldPost.no] = oldPost;
+            }
 
             for (const post of posts) {
-                let found = false;
-
-                for (const mainPost of thread.mainPosts) {
-                    if (mainPost.no === post.no) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
+                if (!ignorePostNoMap[post.no]) {
                     thread.posts.push(post);
                 }
             }
