@@ -42,7 +42,8 @@ export class PostComponent implements OnInit {
             const relativeY = _rBox.top;
 
             if (relativeY < 0) {
-                window.scrollTo(0, relativeY);
+                // window.scrollTo(0, relativeY);
+                div.scrollIntoView();
             }
         }
     }
