@@ -1,3 +1,6 @@
 <a tabindex="0" [class]="hasBackground ? 'with-background' : ''">
-    <span><ng-content></ng-content></span>
+    <div class="button-fill">
+        <i *ngIf="icon" class="material-icons">{{ icon }}</i>
+        <span><ng-content></ng-content></span>
+    </div>
 </a>

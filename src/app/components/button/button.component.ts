@@ -6,7 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
     styleUrls: ['./button.style.scss']
 })
 export class ButtonComponent {
-    // @Input() public text: string = '';
+    @Input() public icon: string = '';
     @Input() public hasBackground: boolean = false;
     
     constructor() {

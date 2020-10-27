@@ -1,9 +1,9 @@
 <div *ngIf="selectedBoards.length || showBoards" [class]="'top-nav' + (showBoards ? ' boards-showing' : '')">
     <div [class]="'top-nav-links' + (!selectedBoards.length ? ' no-board-selected' : '')">
-        <moo-button [hasBackground]="true" (click)="closeAllThreads()">Snooze all</moo-button>
-        <moo-button [hasBackground]="true" (click)="clearThreadsAbove()">Snooze above</moo-button>
+        <moo-button [hasBackground]="true" (click)="closeAllThreads()" icon="hourglass_full">Snooze all</moo-button>
+        <moo-button [hasBackground]="true" (click)="clearThreadsAbove()" icon="hourglass_top">Snooze above</moo-button>
         <!-- <a (click)="clearBlocks()">Clear blocks</a> -->
-        <moo-button [hasBackground]="true" class="boards-toggle" (click)="showBoards = !showBoards">{{ showBoards ? 'Close boards' : 'Boards' }}</moo-button>
+        <moo-button [hasBackground]="true" class="boards-toggle" (click)="showBoards = !showBoards" [icon]="showBoards ? 'expand_less' : 'expand_more'">{{ showBoards ? 'Close boards' : 'Boards' }}</moo-button>
     </div>
 
     <div *ngIf="showBoards" class="boards">
@@ -44,9 +44,9 @@
     <ng-container *ngFor="let thread of threads">
         <div class="thread-header">
             <a [href]="'https://boards.4channel.org/' + thread.board + '/'" *ngIf="selectedBoards.length > 1">/{{ thread.board }}/</a>
-            <moo-button [hasBackground]="true" (click)="blockThread(thread)">Delete</moo-button>
-            <moo-button [hasBackground]="true" (click)="closeThread(thread)">Snooze</moo-button>
-            <moo-button class="expander" [hasBackground]="true" (click)="loadFullPosts(thread)">{{ thread.expanded ? 'Reload' : 'Expand' }}</moo-button>
+            <moo-button [hasBackground]="true" (click)="blockThread(thread)" icon="delete_forever">Delete</moo-button>
+            <moo-button [hasBackground]="true" (click)="closeThread(thread)" icon="watch_later">Snooze</moo-button>
+            <moo-button class="expander" [hasBackground]="true" (click)="loadFullPosts(thread)" [icon]="thread.expanded ? 'refresh' : 'read_more'">{{ thread.expanded ? 'Reload' : 'Expand' }}</moo-button>
             <!-- <a *ngIf=" thread.mainPosts[0]?.no" [href]="'https://boards.4chan.org/' + thread.board + '/thread/' + thread.mainPosts[0].no + '#p' + thread.mainPosts[0].no" target="_blank">4chan.org</a> -->
         </div>
     
