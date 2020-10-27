@@ -36,14 +36,19 @@ export class PostComponent implements OnInit {
         post.expanded = !post.expanded;
 
         if (div) {
+            const posY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
             const _rBox = div.getBoundingClientRect();
 
             // Element vertical position relative to current scroll position on document
             const relativeY = _rBox.top;
 
+            // Starting position of element on document
+            const _rY = relativeY + posY;
+
             if (relativeY < 0) {
-                // window.scrollTo(0, relativeY);
-                div.scrollIntoView();
+                // Scroll to top of post but make room for the buttons above and add padding (160px)
+                window.scrollTo(0, _rY - 160);
             }
         }
     }
