@@ -8,10 +8,13 @@
 
     <div *ngIf="showBoards" class="boards">
         <div class="board-text">
-            Select one or more boards
+            Select one or more boards. Close boards once you're done
+            <!-- Select one or more boards<span class="mobile-board-text">. Close boards once you're done</span> -->
         </div>
 
-        <moo-button [hasBackground]="!!selectedBoardMap[board]" *ngFor="let board of boards" [class]="selectedBoardMap[board] ? 'selected' : ''" (click)="toggleBoard(board)">{{ board }}</moo-button>
+        <div class="board-buttons">
+            <moo-button [hasBackground]="!!selectedBoardMap[board]" *ngFor="let board of boards" [class]="selectedBoardMap[board] ? 'selected' : ''" (click)="toggleBoard(board)">{{ board }}</moo-button>
+        </div>
     </div>
 </div>
 
@@ -43,7 +46,7 @@
             <a [href]="'https://boards.4channel.org/' + thread.board + '/'" *ngIf="selectedBoards.length > 1">/{{ thread.board }}/</a>
             <moo-button [hasBackground]="true" (click)="blockThread(thread)">Delete</moo-button>
             <moo-button [hasBackground]="true" (click)="closeThread(thread)">Snooze</moo-button>
-            <moo-button [hasBackground]="true" (click)="loadFullPosts(thread)">Expand</moo-button>
+            <moo-button class="expander" [hasBackground]="true" (click)="loadFullPosts(thread)">{{ thread.expanded ? 'Reload' : 'Expand' }}</moo-button>
             <!-- <a *ngIf=" thread.mainPosts[0]?.no" [href]="'https://boards.4chan.org/' + thread.board + '/thread/' + thread.mainPosts[0].no + '#p' + thread.mainPosts[0].no" target="_blank">4chan.org</a> -->
         </div>
     

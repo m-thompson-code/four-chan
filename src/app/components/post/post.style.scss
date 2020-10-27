@@ -10,6 +10,16 @@
 .header {
     margin-bottom: $spacing/4;
 }
+
+.sections {
+    div {
+        margin-bottom: $spacing/4;
+    }
+    div:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .post-no {
     margin-right: $spacing/4;
 }
@@ -21,12 +31,10 @@ img {
 
 .image-container {
     cursor: pointer;
-    margin-bottom: $spacing/4;
 }
 
 .comment {
     line-height: 1.375;
-    margin-bottom: $spacing/2;
 }
 
 .comment-html-string {

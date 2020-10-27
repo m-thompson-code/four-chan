@@ -16,21 +16,19 @@
 
     width: 100%;
     height: auto;
-
-    margin-bottom: $spacing;
 }
 
 .posts {
     width: 50%;
     padding: $spacing/4;
     box-sizing: border-box;
-    // max-height: 100vh;
-    // max-height: var(--app-height-100);
-    // overflow:auto;
 }
 
 moo-post {
-    margin-bottom: $spacing/2;
+    margin-bottom: $spacing;
+}
+moo-post:last-child {
+    margin-bottom: 0;
 }
 
 .visibility-debug {

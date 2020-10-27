@@ -45,6 +45,7 @@ export interface Thread {
     mainPosts: Post[];
     posts: Post[];
     visibility?: Visibility;
+    expanded: boolean;
 }
 
 export interface Post {
@@ -211,6 +212,7 @@ export class DataService {
                     mainPostNo: 0,
                     mainPosts: [],
                     posts: [],
+                    expanded: false,
                 };
 
                 if (!rawThread || !rawThread.posts || !Array.isArray(rawThread.posts)) {

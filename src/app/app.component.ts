@@ -433,6 +433,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public loadFullPosts(thread: Thread): Promise<void> {
+        thread.expanded = true;
+        
         const mainPostNo = thread.mainPostNo;
         const board = thread.board;
 

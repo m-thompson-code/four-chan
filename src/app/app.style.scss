@@ -17,12 +17,19 @@
 .boards {
     display: flex;
     flex-wrap: wrap;
+    flex-grow: 1;
 
     width: 100%;
 
-    margin-bottom: $spacing/2;
+    .board-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        flex-grow: 1;
+
+        width: 100%;
+    }
 }
-    
+
 .top-nav-links {
     display: flex;
     flex-wrap: wrap;
@@ -34,9 +41,19 @@ a, moo-button, .board-text {
     padding: $spacing/4;
 }
 
+// a.expander, moo-button.expander {
+//     margin-left: auto;
+// }
+
 .board-text {
     width: 100%;
     box-sizing: border-box;
+
+    margin-bottom: $spacing/2;
+
+    .mobile-board-text {
+        display: none;
+    }
 }
 
 .boards-toggle {
@@ -50,20 +67,20 @@ a, moo-button, .board-text {
     flex-wrap: wrap;
 }
 
-.top-nav-links.no-board-selected {
-    // Hide boards toggle (and links) and prevent end user from closing board select until they choose something
-    a, moo-button {
-        visibility: hidden;
-        pointer-events: none;
-    }
-    a.boards-toggle, moo-button.boards-toggle {
-        visibility: visible;
-        pointer-events: auto;
-    }
-}
-
 .top-nav.boards-showing {
     border-bottom: 1px solid $borderColor;
+}
+
+.top-nav-links.no-board-selected {
+    // hide all top-nav-link buttons except for boards toggle
+    a, moo-button {
+        display: none;
+    }
+    a.boards-toggle, moo-button.boards-toggle {
+        display: block;
+        // visibility: visible;
+        // pointer-events: auto;
+    }
 }
 
 .line-break {
@@ -89,6 +106,15 @@ a, moo-button, .board-text {
         padding: $spacing/8;
     }
 
+    .board-text {
+        margin-bottom: auto;
+        flex-grow: 1;
+
+        .mobile-board-text {
+            display: inline;
+        }
+    }
+
     .top-nav.boards-showing {
         display: flex;
         flex-direction: column;
@@ -100,17 +126,20 @@ a, moo-button, .board-text {
 
         // Push the board buttons down if there's space
         .boards {
-            flex-grow: 1;
-            margin-top: auto;
+            // flex-grow: 1;
             margin-bottom: 0;
+        }
+
+        .top-nav-links {
+            // hide all top-nav-link buttons except for boards toggle
+            a, moo-button {
+                display: none;
+            }
+            a.boards-toggle, moo-button.boards-toggle {
+                display: block;
+                // visibility: visible;
+                // pointer-events: auto;
+            }
         }
     }
 }
-
-// @media only screen and (max-width: 400px) {
-//     .top-nav {
-//         .boards {
-//             flex-grow: 1;
-//         }
-//     }
-// }
