@@ -5,12 +5,17 @@ import { PostComponent } from './post.component';
 
 import { DirectivesModule } from '@app/directives';
 
+import { IconButtonModule } from '@app/components/icon-button';
+
 @NgModule({
     declarations: [PostComponent],
     imports: [
         CommonModule,
 
         DirectivesModule,
+
+        IconButtonModule,
+        
     ],
     exports: [PostComponent]
 })

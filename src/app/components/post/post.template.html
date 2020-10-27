@@ -1,4 +1,4 @@
-<div #postDiv>
+<div class="post" #postDiv>
     <div class="header">
         <a [href]="'https://boards.4chan.org/' + post.board + '/thread/' + (post.resto || post.no) + '#p' + post.no" target="_blank">
             <span class="post-no">
@@ -77,4 +77,6 @@
             <br><a class="html-toggle" (click)="post.htmlStrExpanded = !post.htmlStrExpanded">(?)</a>
         </div>
     </div>
+
+    <moo-icon-button *ngIf="closeable" icon="close" (click)="closeSelected.emit()"></moo-icon-button>
 </div>

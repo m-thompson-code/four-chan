@@ -1,4 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { environment } from '@environment';
+
 import { Post } from '@app/services/data.service';
 
 @Component({
@@ -8,6 +10,8 @@ import { Post } from '@app/services/data.service';
 })
 export class PostComponent implements OnInit {
     @Input() post!: Post;
+    @Input() closeable: boolean = false;
+    @Output() closeSelected: EventEmitter<void> = new EventEmitter();
     private _getDimensionsInterval?: number;
     public dimensionsLoaded: boolean = true;
 
@@ -15,7 +19,7 @@ export class PostComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        if (!this.post) {
+        if (!this.post && !environment.production) {
             debugger;
         }
     }
@@ -37,10 +41,6 @@ export class PostComponent implements OnInit {
 
         post.expanded = !post.expanded;
 
-        // if (post.expanded) {
-        //     this.getImageDimensions();
-        // }
-
         if (div) {
             const _rBox = div.getBoundingClientRect();
 
@@ -48,64 +48,10 @@ export class PostComponent implements OnInit {
             const relativeY = _rBox.top;
 
             if (relativeY < 0) {
-                div.scrollIntoView();
+                window.scrollTo(0, relativeY);
             }
         }
-
-        // setTimeout(() => {
-        //     // debugger;
-        // }, 50);
     }
-
-    // public getImageDimensions(): Promise<void> {
-    //     const src = this.post.imageUrl;
-
-    //     if (!src) {
-    //         this.dimensionsLoaded = true;
-    //         return Promise.resolve();
-    //     }
-
-    //     const image = new Image();
-
-    //     return new Promise(resolve => {
-    //         const _l = () => {
-    //             this.dimensionsLoaded = true;
-    //             resolve();
-
-    //             setTimeout(() => {
-    //                 // debugger;
-    //             }, 1);
-                
-    //             clearInterval(this._getDimensionsInterval);
-    //         };
-
-    //         if (!src) {
-    //             this.dimensionsLoaded = true;
-    //             _l();
-    //         }
-
-    //         image.onload = () => {
-    //             console.log("onload");
-    //             _l;
-    //         };
-    //         image.onerror = () => {
-    //             console.log("onerror");
-
-    //             _l;
-    //         };
-
-    //         clearInterval(this._getDimensionsInterval);
-
-    //         this._getDimensionsInterval = window.setInterval(() => {
-    //             if (image.naturalWidth && image.naturalHeight) {
-    //                 console.log("naturalWidth detected");
-    //                 _l();
-    //             }
-    //         }, 50);
-
-    //         image.src = src;
-    //     });
-    // }
 
     public ngOnDestroy(): void {
         clearInterval(this._getDimensionsInterval);

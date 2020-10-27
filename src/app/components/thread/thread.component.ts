@@ -1,6 +1,9 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { environment } from '@environment';
+
 import { Visibility } from '@app/directives/scroll-listener.directive';
-import { Thread } from '@app/services/data.service';
+
+import { Post, Thread } from '@app/services/data.service';
 
 @Component({
     selector: 'moo-thread',
@@ -8,7 +11,16 @@ import { Thread } from '@app/services/data.service';
     styleUrls: ['./thread.style.scss']
 })
 export class ThreadComponent implements OnInit {
-    @Input() thread!: Thread;
+    @ViewChild('threadDiv') private _threadDiv!: ElementRef<HTMLDivElement>;
+
+    @Input() public thread!: Thread;
+    @Input() public highlight: boolean = false;
+    @Input() public showButtons: boolean = false;
+
+    @Output() closeSelected: EventEmitter<Post> = new EventEmitter();
+    @Output() public deleteSelected: EventEmitter<void> = new EventEmitter();
+    @Output() public snoozeSelected: EventEmitter<void> = new EventEmitter();
+    @Output() public loadMoreSelected: EventEmitter<void> = new EventEmitter();
 
     public JSON: JSON;
     
@@ -17,8 +29,27 @@ export class ThreadComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        if (!this.thread) {
+        if (!this.thread && !environment.production) {
             debugger;
+        }
+    }
+
+    public scrollToTopOfThread(): void {
+        console.log('scrollToTop');
+        if (this._threadDiv) {
+            const posY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
+            console.log(this._threadDiv.nativeElement);
+            const _rBox = this._threadDiv.nativeElement.getBoundingClientRect();
+
+            // Element vertical position relative to current scroll position on document
+            const relativeY = _rBox.top;
+
+            // Starting position of element on document
+            const _rY = relativeY + posY;
+
+            // Scroll to top of thread but make room for the buttons above and add padding (200px)
+            window.scrollTo(0, _rY - 200);
         }
     }
 

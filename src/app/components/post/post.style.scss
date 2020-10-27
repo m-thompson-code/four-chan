@@ -7,6 +7,12 @@
     height: auto;
 }
 
+.post {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
 .header {
     margin-bottom: $spacing/4;
 }
@@ -55,4 +61,11 @@ img {
 
 span, a {
     overflow-wrap: break-word;
+}
+
+moo-icon-button {
+    position: absolute;
+    right: 0;
+    top: 12px;
+    transform: translateY(-50%);
 }

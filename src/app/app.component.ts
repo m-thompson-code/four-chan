@@ -25,6 +25,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
     public threads: Thread[] = [];
 
+    public blockPostMap: {
+        [mainPostNo: number]: {
+            [postNo: number]: true;
+        };
+    } = {};
+
     public blockThreadMap: {
         [mainPostNo: number]: true;
     } = {};
@@ -39,6 +45,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private _detachListeners?: () => void;
 
+    public threadInView?: Thread | null;
+
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
         public loaderService: LoaderService) {
@@ -48,6 +56,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.scrollService.init(this.renderer);
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
             console.log('APP', value);
+            this.threadInView = this._getThreadInView();
         });
 
         // Handle getting screen height css variables
@@ -58,7 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 const windowHeight = window.innerHeight;
 
                 doc.style.setProperty('--app-height-100', `${windowHeight}px`);
-                doc.style.setProperty('--app-height-95', `${windowHeight * .95}px`);
                 doc.style.setProperty('--app-height-50', `${windowHeight * .5}px`);
             } catch(error) {
                 console.error(error);
@@ -91,7 +99,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         const promises: Promise<any>[] = [];
 
-        let pages = [1];
+        let pages = [2, 1];
 
         for (const page of pages) {
             promises.push(this.dataService.getThreads(board, page).then(threads => {
@@ -138,7 +146,8 @@ export class AppComponent implements OnInit, OnDestroy {
                                         }
                 
                                         if (!postExistsAlready) {
-                                            oldThread.posts.push(post);
+                                            // oldThread.posts.push(post);
+                                            this.pushPost(oldThread, post);
                                         }
                                     }
     
@@ -410,8 +419,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.loaderService.inc();
 
         return this.dataService.getFullThread(board, mainPostNo).then(posts => {
-            // Clear existing posts
+            // Clear existing posts (removed since if the thread doesn't exist anymore, the posts will just be empty)
             // thread.posts = [];
+
             const ignorePostNoMap: {
                 [no: number]: Post;
             } = {};
@@ -426,7 +436,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
             for (const post of posts) {
                 if (!ignorePostNoMap[post.no]) {
-                    thread.posts.push(post);
+                    // thread.posts.push(post);
+                    this.pushPost(thread, post);
                 }
             }
         }).catch(error => {
@@ -438,6 +449,45 @@ export class AppComponent implements OnInit, OnDestroy {
         }).then(() => {
             this.loaderService.dec();
         });
+    }
+
+    private _getThreadInView(): Thread | null {
+        for (const thread of this.threads) {
+            if (!thread.visibility) {
+                continue;
+            }
+
+            if (thread.visibility.topRatio >= 1 && thread.visibility.bottomRatio >= 1) {
+                return thread;
+            }
+
+            if (thread.visibility.topRatio < 0) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    public pushPost(thread: Thread, post: Post): void {
+        if (this.blockPostMap[thread.mainPostNo] && this.blockPostMap[thread.mainPostNo][post.no]) {
+            return;
+        }
+        
+        thread.posts.push(post);
+    }
+
+    public deletePost(thread: Thread, post: Post): void {
+        for (let i = 0; i < thread.posts.length; i++) {
+            const _post = thread.posts[i];
+            if (post === _post) {
+                thread.posts.splice(i, 1);
+                break;
+            }
+        }
+
+        this.blockPostMap[thread.mainPostNo] = this.blockPostMap[thread.mainPostNo] || {};
+        this.blockPostMap[thread.mainPostNo][post.no] = true;
     }
 
     public ngOnDestroy(): void {
