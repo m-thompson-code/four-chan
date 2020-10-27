@@ -2,10 +2,9 @@ import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { environment } from '@environment';
 import { Subscription } from 'rxjs';
 
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 import 'firebase/analytics';
-
 
 import { DataService, Post, Thread } from './services/data.service';
 import { LoaderService } from './services/loader.service';
@@ -54,6 +53,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
     public agreeToTerms: string = '';
     public showCloseBoardsFlash: boolean = false;
+    public errorCount: number = 0;
+
+    private _errorCountInterval?: number;
 
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
@@ -186,6 +188,7 @@ export class AppComponent implements OnInit, OnDestroy {
             // pass
         }).catch(error => {
             console.error(error);
+            this._errorTrackerFunc('getThreads', error);
 
             if (!environment.production) {
                 debugger;
@@ -247,9 +250,22 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    public getBoards(): Promise<void> {
+    public getBoards(retryCount?: number): Promise<void> {
         return this.dataService.getBoards().then(boards => {
             this.boards = boards;
+        }).catch(error => {
+            console.error(error);
+            this._errorTrackerFunc('getBoards', error);
+
+            const _retryCount = retryCount || 0;
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                }, _retryCount * 1000 + 2000);
+            }).then(() => {
+                this.getBoards(_retryCount + 1);
+            })
         });
     }
 
@@ -485,6 +501,8 @@ export class AppComponent implements OnInit, OnDestroy {
             if (!environment.production) {
                 debugger;
             }
+
+            this.errorCount += 1;
         }).then(() => {
             this.loaderService.dec();
 
@@ -565,6 +583,31 @@ export class AppComponent implements OnInit, OnDestroy {
         firebase.analytics().logEvent('page_view', {
             'page_path': window.location.href || "(unknown)",
             // 'page_name': pageName,
+        });
+    }
+
+    private _errorCountDown(): void {
+        clearInterval(this._errorCountInterval);
+        this._errorCountInterval = window.setInterval(() => {
+            this.errorCount -= 1;
+
+            if (!this.errorCount) {
+                clearInterval(this._errorCountInterval);
+            }
+        }, 2500);
+    }
+
+    private _errorTrackerFunc(funcName: string, error: Error): void {
+        this.errorCount += 1;
+        if (this.errorCount > 5) {
+            this.errorCount = 5;
+        }
+
+        this._errorCountDown();
+
+        firebase.analytics().logEvent('error', {
+            'func_name': funcName,
+            'error': error.message || "unknown",
         });
     }
 

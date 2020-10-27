@@ -247,3 +247,29 @@ moo-button, .board-text, .board-link {
         text-shadow: 0px 5px 20px rgba(black, .3);
     }
 }
+
+@keyframes warning-animation {
+    from {bottom: -100px;}
+    to {bottom: 0;}
+}
+
+.warning {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    padding: $spacing/4;
+    color: $error;
+    
+    i {
+        font-size: $spacing;
+        height: $spacing;
+        width: $spacing;
+    }
+
+    pointer-events: none;
+
+    // spring animation
+    animation: warning-animation 400ms cubic-bezier(0.61, 0.01, 0.28, 1.26);
+    transition: bottom 400ms cubic-bezier(0.61, 0.01, 0.28, 1.26);
+}
