@@ -183,21 +183,31 @@ moo-button, .board-text, .board-link, .page-load-setting {
 
 .close-boards-flash {
     position: absolute;
-    right: 0;
-    top: 0;
+    top: -85px;
+    right: -47px;
 
     height: 242px;
     width: 242px;
-
-    transform: translate(28%, -50%);
-
-    background: rgba(white, .25);
+    
+    background: rgba(map-get($primaryLighten, 90), .2);
 
     border-radius: 50%;
 
     pointer-events: none;
 
     display: none;
+}
+
+@keyframes fade-in-out-animation {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {opacity: 1;}
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
 }
 
 .close-boards-flash.active {

@@ -11,6 +11,7 @@ import { LoaderService } from './services/loader.service';
 
 import { ScrollService } from './services/scroll.service';
 import { StorageService } from './services/storage.service';
+import { ResponsiveService } from './services/responsive.service';
 
 @Component({
     selector: 'app-root',
@@ -61,7 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
-        public loaderService: LoaderService) {
+        public loaderService: LoaderService, private responsiveService: ResponsiveService) {
     }
 
     public ngOnInit(): void {
@@ -75,6 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this._initalizeFirebase();
 
+        this.responsiveService.init(this.renderer);
         this.scrollService.init(this.renderer);
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
             this.threadInView = this._getThreadInView();
@@ -322,7 +324,8 @@ export class AppComponent implements OnInit, OnDestroy {
             index = i;
         }
 
-        this.threads = this.threads.slice(index + 1);
+        // Includes the thread that is currently in view on the top
+        this.threads = this.threads.slice(index + 2);
 
         this.softReload();
 
@@ -643,5 +646,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.scrollObserver?.unsubscribe();
         this._detachListeners && this._detachListeners();
+
+        this.scrollService.detach();
+        this.responsiveService.detach();
     }
 }

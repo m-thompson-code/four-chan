@@ -4,6 +4,7 @@ import { environment } from '@environment';
 import { Visibility } from '@app/directives/scroll-listener.directive';
 
 import { Post, Thread } from '@app/services/data.service';
+import { ResponsiveService } from '@app/services/responsive.service';
 
 @Component({
     selector: 'moo-thread',
@@ -23,8 +24,10 @@ export class ThreadComponent implements OnInit {
     @Output() public loadMoreSelected: EventEmitter<void> = new EventEmitter();
 
     public JSON: JSON;
+
+    public canShowButtons: boolean = false;
     
-    constructor() {
+    constructor(private responsiveService: ResponsiveService) {
         this.JSON = JSON;
     }
 
@@ -77,7 +80,28 @@ export class ThreadComponent implements OnInit {
         }
     }
 
-    public updateVisibilityLogic(visiblity: Visibility): void {
+    public updateVisibility(visiblity: Visibility): void {
+        this.canShowButtons = false;
+
         this.thread.visibility = visiblity;
+
+        if (!this.showButtons) {
+            return;
+        }
+
+        const deviceType = this.responsiveService.responsiveMetadata.deviceType;
+
+        if (deviceType === 'desktop' || deviceType === 'desktop_4k') {
+            this.showButtons = true;
+        } else {
+            const height = this._threadDiv.nativeElement.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            if (height > windowHeight * 1.5) {
+                this.canShowButtons = true;
+            } else {
+                this.canShowButtons = false;
+            }
+        }
     }
 }

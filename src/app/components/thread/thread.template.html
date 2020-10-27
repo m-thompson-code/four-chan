@@ -1,4 +1,4 @@
-<div #threadDiv [class]="'thread' + (highlight ? ' highlight' : '') + (showButtons ? ' show-buttons' : '')" mooScrollListener (visibilityChanged)="updateVisibilityLogic($event)">
+<div #threadDiv [class]="'thread' + (highlight ? ' highlight' : '') + (showButtons ? ' show-buttons' : '')" mooScrollListener (visibilityChanged)="updateVisibility($event)">
     <div class="main-posts posts">
         <moo-post *ngFor="let post of thread.mainPosts" [post]="post"></moo-post>
     </div>
@@ -12,17 +12,19 @@
     </div> -->
 </div>
 
-<div class="buttons fade-in" *ngIf="showButtons" (mouseenter)="highlight = true" (mouseleave)="highlight = false">
-    <moo-button [hasBackground]="true" icon="delete_forever" (click)="scrollToTopOfThread(); deleteSelected.emit()"><span class="button-text">Delete</span></moo-button>
-    <moo-button [hasBackground]="true" icon="watch_later" (click)="scrollToTopOfThread(); snoozeSelected.emit()"><span class="button-text">Snooze</span></moo-button>
-    <moo-button [hasBackground]="true" [icon]="thread.expanded ? 'refresh' : 'unfold_more'" (click)="loadMoreSelected.emit()"><span class="button-text">{{ thread.expanded ? 'Reload' : 'Expand' }}</span></moo-button>
-
-    <moo-icon-button [hasBackground]="true" icon="delete_forever" (click)="scrollToTopOfThread(); deleteSelected.emit()"></moo-icon-button>
-    <moo-icon-button [hasBackground]="true" icon="watch_later" (click)="scrollToTopOfThread(); snoozeSelected.emit()"></moo-icon-button>
-    <moo-icon-button [hasBackground]="true" [icon]="thread.expanded ? 'refresh' : 'unfold_more'" (click)="loadMoreSelected.emit()"></moo-icon-button>
-</div>
-
-<div class="buttons button-buttons fade-in" *ngIf="showButtons" (mouseenter)="highlight = true" (mouseleave)="highlight = false">
-    <moo-button [hasBackground]="true" icon="vertical_align_bottom" (click)="scrollToBottomOfThread()"><span class="button-text">Latest</span></moo-button>
-    <moo-icon-button [hasBackground]="true" icon="vertical_align_bottom" (click)="scrollToBottomOfThread()"></moo-icon-button>
-</div>
+<ng-container *ngIf="canShowButtons && (showButtons || thread.visibility?.visibile)">
+    <div [class]="'buttons' + (showButtons ? ' fade-in': '')" (mouseenter)="highlight = true" (mouseleave)="highlight = false">
+        <moo-button [hasBackground]="true" icon="delete_forever" (click)="scrollToTopOfThread(); deleteSelected.emit()"><span class="button-text">Delete</span></moo-button>
+        <moo-button [hasBackground]="true" icon="watch_later" (click)="scrollToTopOfThread(); snoozeSelected.emit()"><span class="button-text">Snooze</span></moo-button>
+        <moo-button [hasBackground]="true" [icon]="thread.expanded ? 'refresh' : 'unfold_more'" (click)="loadMoreSelected.emit()"><span class="button-text">{{ thread.expanded ? 'Reload' : 'Expand' }}</span></moo-button>
+    
+        <moo-icon-button [hasBackground]="true" icon="delete_forever" (click)="scrollToTopOfThread(); deleteSelected.emit()"></moo-icon-button>
+        <moo-icon-button [hasBackground]="true" icon="watch_later" (click)="scrollToTopOfThread(); snoozeSelected.emit()"></moo-icon-button>
+        <moo-icon-button [hasBackground]="true" [icon]="thread.expanded ? 'refresh' : 'unfold_more'" (click)="loadMoreSelected.emit()"></moo-icon-button>
+    </div>
+    
+    <div [class]="'buttons bottom-buttons' + (showButtons ? ' fade-in' : '')" (mouseenter)="highlight = true" (mouseleave)="highlight = false">
+        <moo-button [hasBackground]="true" icon="vertical_align_bottom" (click)="scrollToBottomOfThread()"><span class="button-text">Latest</span></moo-button>
+        <moo-icon-button [hasBackground]="true" icon="vertical_align_bottom" (click)="scrollToBottomOfThread()"></moo-icon-button>
+    </div>
+</ng-container>

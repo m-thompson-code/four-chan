@@ -406,8 +406,11 @@ export class DataService {
 
         const ary: string[] = [];
 
-        for (let i = 0; i < str.length; i++) {
-            const char = str[i];
+        // Clean off any wbr tags
+        const _str = str.replace(/<wbr>/g, '');
+
+        for (let i = 0; i < _str.length; i++) {
+            const char = _str[i];
 
             if (char === '>') {
                 current += char;
