@@ -2,6 +2,11 @@ import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { environment } from '@environment';
 import { Subscription } from 'rxjs';
 
+import firebase from 'firebase';
+
+import 'firebase/analytics';
+
+
 import { DataService, Post, Thread } from './services/data.service';
 import { LoaderService } from './services/loader.service';
 
@@ -47,12 +52,23 @@ export class AppComponent implements OnInit, OnDestroy {
 
     public threadInView?: Thread | null;
 
+    public agreeToTerms: string = '';
+    public showCloseBoardsFlash: boolean = false;
+
     constructor(private renderer: Renderer2, private dataService: DataService, 
         private storageService: StorageService, private scrollService: ScrollService, 
         public loaderService: LoaderService) {
     }
 
     public ngOnInit(): void {
+        this.agreeToTerms = this.storageService.getItem('__cached_agree_to_terms') || '';
+
+        if (!this.agreeToTerms) {
+            this.showCloseBoardsFlash = true;
+        }
+
+        this._initalizeFirebase();
+
         this.scrollService.init(this.renderer);
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
             console.log('APP', value);
@@ -201,6 +217,10 @@ export class AppComponent implements OnInit, OnDestroy {
         this.storageService.setItem('__cached_boards', JSON.stringify(this.selectedBoards));
 
         this.softReload();
+
+        firebase.analytics().logEvent('toggled_board', {
+            'board': board,
+        });
     }
 
     public getThreadsLoop(): Promise<void> {
@@ -283,6 +303,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.threads = this.threads.slice(index + 1);
 
         this.softReload();
+
+        firebase.analytics().logEvent('cleared_threads_above');
     }
 
     public addThread(thread: Thread): void {
@@ -318,6 +340,11 @@ export class AppComponent implements OnInit, OnDestroy {
                 div.scrollIntoView();
             }
         }
+
+        firebase.analytics().logEvent('toggled_image', {
+            'thread_no': post.resto || post.no,
+            'post_no': post.no,
+        });
     }
 
     private _removeThreadsByBoard(board: string): void {
@@ -357,10 +384,14 @@ export class AppComponent implements OnInit, OnDestroy {
         this.storageService.setItem("__block_thread_map", JSON.stringify(this.blockThreadMap));
         
         this._removeThread(thread);
+
+        firebase.analytics().logEvent('blocked_thread', {
+            'thread_no': thread.mainPostNo,
+            // 'page_name': pageName,
+        });
     }
     
     public closeThread(thread: Thread): void {
-
         const mostUpToDateVersion = this.threadMap[thread.mainPostNo] || thread;
 
         // Remove all versions of this thread if this was the most up to date version
@@ -383,12 +414,18 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         this.setThreads(threads);
+
+        firebase.analytics().logEvent('closed_thread', {
+            'thread_no': thread.mainPostNo,
+        });
     }
 
     public closeAllThreads(): void {
         this.threads = [];
 
         this.softReload();
+
+        firebase.analytics().logEvent('closed_all_threads');
     }
 
     public softReload(): void {
@@ -407,6 +444,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public clearBlocks(): void {
         if (window.confirm("Clear cache?")) {
             this._clearBlocks();
+
+            firebase.analytics().logEvent('cleared_blocks');
         }
     }
 
@@ -448,6 +487,11 @@ export class AppComponent implements OnInit, OnDestroy {
             }
         }).then(() => {
             this.loaderService.dec();
+
+            firebase.analytics().logEvent('loaded_full_posts', {
+                'thread': thread.mainPostNo,
+                // 'page_name': pageName,
+            });
         });
     }
 
@@ -488,6 +532,40 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.blockPostMap[thread.mainPostNo] = this.blockPostMap[thread.mainPostNo] || {};
         this.blockPostMap[thread.mainPostNo][post.no] = true;
+
+        firebase.analytics().logEvent('closed_post', {
+            'thread_no': thread.mainPostNo,
+            'post_no': post.no,
+        });
+    }
+
+    public agreeToTermsFunc(): void {
+        this.agreeToTerms = new Date().toString();
+        this.storageService.setItem('__cached_agree_to_terms', this.agreeToTerms);
+    }
+
+    private _initalizeFirebase(): void {
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWpnr99IP-97TkbYkCvui6C5MW0be9_ss",
+            authDomain: "four-chan.firebaseapp.com",
+            databaseURL: "https://four-chan.firebaseio.com",
+            projectId: "four-chan",
+            storageBucket: "four-chan.appspot.com",
+            messagingSenderId: "684421693648",
+            appId: "1:684421693648:web:9540e52aced7432663ded5",
+            measurementId: "G-8D950L2QFF"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Start up analytics
+        firebase.analytics();
+
+        firebase.analytics().logEvent('page_view', {
+            'page_path': window.location.href || "(unknown)",
+            // 'page_name': pageName,
+        });
     }
 
     public ngOnDestroy(): void {

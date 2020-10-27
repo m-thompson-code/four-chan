@@ -21,15 +21,19 @@
     
             <div *ngIf="post.spoiler">
                 <img src="https://s.4cdn.org/image/spoiler.png">
+                <i *ngIf="post.ext === '.webm'" class="material-icons">videocam</i>
+                <i *ngIf="post.ext === '.gif'" class="material-icons">gif</i>
             </div>
     
             <ng-container *ngIf="!post.spoiler">
-                <div *ngIf="!post.expanded || !dimensionsLoaded">
+                <div class="thumbnail" *ngIf="post.ext !== '.swf' && !post.expanded">
                     <img [src]="post.thumbnailUrl" [attr.width]="'' + post.tn_w + 'px'" [style.height]="'' + post.tn_h + 'px'" 
-                     [style.width]="'' + post.tn_w + 'px'" [style.height]="'' + post.tn_h + 'px'" loading="lazy" [alt]="post.thumbnailUrl">
+                    [style.width]="'' + post.tn_w + 'px'" [style.height]="'' + post.tn_h + 'px'" loading="lazy" [alt]="post.thumbnailUrl">
+                    <i *ngIf="post.ext === '.webm'" class="material-icons">videocam</i>
+                    <i *ngIf="post.ext === '.gif'" class="material-icons">gif</i>
                 </div>
                 
-                <div *ngIf="post.expanded && dimensionsLoaded">
+                <div *ngIf="post.expanded">
                     <img *ngIf="post.ext === '.jpg' || post.ext === '.png' || post.ext === '.gif'" 
                         [src]="post.imageUrl" [attr.width]="'' + post.w + 'px'" [attr.height]="'' + post.h + 'px'" [style.width]="'' + post.w + 'px'" 
                         mooKeepRatio [ratioWidth]="post.w" [ratioHeight]="post.h" [basedOnWidth]="true" [alt]="post.imageUrl">
@@ -38,11 +42,11 @@
                         mooKeepRatio [ratioWidth]="post.w" [ratioHeight]="post.h" [basedOnWidth]="true"></video>
                 </div>
     
-                <div *ngIf="post.ext === '.swf'">
-                    No support extension found: {{ post.ext }} <a [href]="post.imageUrl">{{ post.imageUrl }}</a>
+                <div class="ext-warning" *ngIf="post.ext === '.swf'">
+                    <span class="error-color">No support for</span> {{ post.ext }}: <a [href]="post.imageUrl">{{ post.imageUrl }}</a>
                 </div>
-                <div *ngIf="post.ext !== '.jpg' && post.ext !== '.png' && post.ext !== '.gif' && post.ext !== '.swf' && post.ext !== '.webm'">
-                    Unexpected extension found: {{ post.ext }} <a href="post.imageUrl">post.imageUrl</a>
+                <div class="ext-warning" *ngIf="post.ext !== '.jpg' && post.ext !== '.png' && post.ext !== '.gif' && post.ext !== '.swf' && post.ext !== '.webm'">
+                    <span class="error-color">Unexpected</span> extension found - {{ post.ext }}: <a href="post.imageUrl">post.imageUrl</a>
                 </div>
             </ng-container>
         </div>

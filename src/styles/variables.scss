@@ -37,3 +37,7 @@ $white: white;
 $backgroundColor: #121212;
 
 $borderColor: scale-color($color: $backgroundColor, $lightness: 10%);
+
+// z-index management
+$topNavZIndex: 10;
+$threadButtonsZIndex: 1;

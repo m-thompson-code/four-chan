@@ -12,8 +12,6 @@ export class PostComponent implements OnInit {
     @Input() post!: Post;
     @Input() closeable: boolean = false;
     @Output() closeSelected: EventEmitter<void> = new EventEmitter();
-    private _getDimensionsInterval?: number;
-    public dimensionsLoaded: boolean = true;
 
     constructor() {
     }
@@ -28,10 +26,6 @@ export class PostComponent implements OnInit {
         if (post.spoiler) {
             post.spoiler = false;
             return;
-        }
-
-        if (post.ext === '.webm') {
-            this.dimensionsLoaded = true;
         }
 
         // Disable minimizing so we can interact with the video controls
@@ -51,9 +45,5 @@ export class PostComponent implements OnInit {
                 window.scrollTo(0, relativeY);
             }
         }
-    }
-
-    public ngOnDestroy(): void {
-        clearInterval(this._getDimensionsInterval);
     }
 }

@@ -8,7 +8,7 @@
     background: $backgroundColor;
     width: 100%;
 
-    z-index: 1;
+    z-index: $topNavZIndex;
 
     overflow: hidden;
     box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.2), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
@@ -37,13 +37,9 @@
     width: 100%;
 }
 
-a, moo-button, .board-text {
+moo-button, .board-text, .board-link {
     padding: $spacing/4;
 }
-
-// a.expander, moo-button.expander {
-//     margin-left: auto;
-// }
 
 .board-text {
     width: 100%;
@@ -67,19 +63,21 @@ a, moo-button, .board-text {
     flex-wrap: wrap;
 }
 
+.thread-header {
+    align-items: center;
+}
+
 .top-nav.boards-showing {
     border-bottom: 1px solid $borderColor;
 }
 
 .top-nav-links.no-board-selected {
     // hide all top-nav-link buttons except for boards toggle
-    a, moo-button {
+    moo-button {
         display: none;
     }
-    a.boards-toggle, moo-button.boards-toggle {
+    moo-button.boards-toggle {
         display: block;
-        // visibility: visible;
-        // pointer-events: auto;
     }
 }
 
@@ -98,11 +96,41 @@ a, moo-button, .board-text {
 }
 
 .threads {
-    margin-top: $spacing * 3;
+    padding-top: $spacing * 3;
+    box-sizing: border-box;
+}
+
+.welcome-block {
+    max-width: 600px;
+    min-height: 100vh;
+    min-height: var(--app-height-100);
+
+    padding: 10vh $spacing/8;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    margin: auto;
+
+    align-items: flex-start;
+    justify-content: center;
+
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        margin-top: $spacing;
+    }
+
+    moo-button {
+        padding: 0;
+        margin-left: auto;
+    }
 }
 
 @media only screen and (max-width: 800px) {
-    a, moo-button, .board-text {
+    moo-button, .board-text, .board-link {
         padding: $spacing/8;
     }
 
@@ -126,20 +154,96 @@ a, moo-button, .board-text {
 
         // Push the board buttons down if there's space
         .boards {
-            // flex-grow: 1;
             margin-bottom: 0;
         }
 
         .top-nav-links {
             // hide all top-nav-link buttons except for boards toggle
-            a, moo-button {
+            moo-button {
                 display: none;
             }
-            a.boards-toggle, moo-button.boards-toggle {
+            moo-button.boards-toggle {
                 display: block;
-                // visibility: visible;
-                // pointer-events: auto;
             }
         }
+    }
+}
+
+.close-boards-flash {
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    height: 242px;
+    width: 242px;
+
+    transform: translate(28%, -50%);
+
+    background: rgba(white, .25);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    display: none;
+}
+
+.close-boards-flash.active {
+    display: block;
+    animation: fade-in-out-animation 1500ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: forwards;
+    animation-iteration-count: 3;
+}
+
+.logo {
+    position: relative;
+    top: 0;
+    left: 0;
+
+    height: 160px;
+    width: 160px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: black;
+
+    font-size: 149px;
+    font-weight: 500;
+    
+    overflow: hidden;
+
+    border-radius: 10%;
+    
+    div {
+        position: relative;
+        top: 5px;
+        left: 5px;
+
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: map-get($primaryDarken, 30);
+    }
+    div + div {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: white;
+
+        text-shadow: 0px 5px 20px rgba(black, .3);
     }
 }
