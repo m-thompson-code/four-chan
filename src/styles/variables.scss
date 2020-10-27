@@ -6,6 +6,33 @@ $spacing: 32px;
 $primary: #4DCECF;//teal;
 // Theme: https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=D32F2F&secondary.color=455A64
 $error: #CF6679;
+$backgroundColor: #121212;
+
+$backgroundColorLighten: (
+    10: scale-color($color: $backgroundColor, $lightness: 10%),
+    20: scale-color($color: $backgroundColor, $lightness: 20%),
+    30: scale-color($color: $backgroundColor, $lightness: 30%),
+    40: scale-color($color: $backgroundColor, $lightness: 40%),
+    50: scale-color($color: $backgroundColor, $lightness: 50%),
+    60: scale-color($color: $backgroundColor, $lightness: 60%),
+    70: scale-color($color: $backgroundColor, $lightness: 70%),
+    80: scale-color($color: $backgroundColor, $lightness: 80%),
+    90: scale-color($color: $backgroundColor, $lightness: 90%),
+    100: scale-color($color: $backgroundColor, $lightness: 100%),
+);
+
+$backgroundColorDarken: (
+    10: scale-color($color: $backgroundColor, $lightness: -10%),
+    20: scale-color($color: $backgroundColor, $lightness: -20%),
+    30: scale-color($color: $backgroundColor, $lightness: -30%),
+    40: scale-color($color: $backgroundColor, $lightness: -40%),
+    50: scale-color($color: $backgroundColor, $lightness: -50%),
+    60: scale-color($color: $backgroundColor, $lightness: -60%),
+    70: scale-color($color: $backgroundColor, $lightness: -70%),
+    80: scale-color($color: $backgroundColor, $lightness: -80%),
+    90: scale-color($color: $backgroundColor, $lightness: -90%),
+    100: scale-color($color: $backgroundColor, $lightness: -100%),
+);
 
 $primaryLighten: (
     10: scale-color($color: $primary, $lightness: 10%),
@@ -33,10 +60,8 @@ $primaryDarken: (
     100: scale-color($color: $primary, $lightness: -100%),
 );
 
-$white: white;
-$backgroundColor: #121212;
-
-$borderColor: scale-color($color: $backgroundColor, $lightness: 10%);
+// $borderColor: scale-color($color: $backgroundColor, $lightness: 10%);
+$borderColor: map-get($backgroundColorDarken, 10);
 
 // z-index management
 $topNavZIndex: 10;
