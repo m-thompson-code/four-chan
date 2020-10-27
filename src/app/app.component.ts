@@ -120,7 +120,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
         const promises: Promise<any>[] = [];
 
-        let pages = [3, 2, 1];
+        let pages = [1];
+
+        if (this.pagesToLoad) {
+            pages = [];
+            for (let i = 0; i < this.pagesToLoad; i++) {
+                pages.push(this.pagesToLoad - i);
+            }
+        }
 
         for (const page of pages) {
             promises.push(this.dataService.getThreads(board, page).then(threads => {
