@@ -51,6 +51,32 @@ export class ThreadComponent implements OnInit {
         }
     }
 
+    public scrollToBottomOfThread(): void {
+        if (this._threadDiv) {
+            const posY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
+            const windowHeight = window.innerHeight;
+
+            const e = this._threadDiv.nativeElement;
+
+            const _rBox = e.getBoundingClientRect();
+
+            // Height of element
+            const height = e.offsetHeight || _rBox.height || 0;
+
+            // Element vertical position relative to current scroll position on document
+            const relativeY = _rBox.top;
+
+            // Starting position of element on document
+            const _rY = relativeY + posY;
+
+            // Ending position of element on document
+            const _rY2 = _rY + height;
+
+            window.scrollTo(0, _rY2 - windowHeight);
+        }
+    }
+
     public updateVisibilityLogic(visiblity: Visibility): void {
         this.thread.visibility = visiblity;
     }

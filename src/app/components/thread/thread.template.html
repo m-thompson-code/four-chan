@@ -21,3 +21,8 @@
     <moo-icon-button [hasBackground]="true" icon="watch_later" (click)="scrollToTopOfThread(); snoozeSelected.emit()"></moo-icon-button>
     <moo-icon-button [hasBackground]="true" [icon]="thread.expanded ? 'refresh' : 'unfold_more'" (click)="loadMoreSelected.emit()"></moo-icon-button>
 </div>
+
+<div class="buttons button-buttons fade-in" *ngIf="showButtons" (mouseenter)="highlight = true" (mouseleave)="highlight = false">
+    <moo-button [hasBackground]="true" icon="vertical_align_bottom" (click)="scrollToBottomOfThread()"><span class="button-text">Latest</span></moo-button>
+    <moo-icon-button [hasBackground]="true" icon="vertical_align_bottom" (click)="scrollToBottomOfThread()"></moo-icon-button>
+</div>

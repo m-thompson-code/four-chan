@@ -529,7 +529,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 continue;
             }
 
-            if (thread.visibility.topRatio >= 1 && thread.visibility.bottomRatio >= 1) {
+            if (thread.visibility.topRatio >= 1 && thread.visibility.bottomRatio >= .95) {
                 return thread;
             }
 
