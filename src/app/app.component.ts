@@ -363,6 +363,8 @@ export class AppComponent implements OnInit, OnDestroy {
             }
         }
 
+        this.scrollService.checkScroll();
+
         firebase.analytics().logEvent('toggled_image', {
             'thread_no': post.resto || post.no,
             'post_no': post.no,
@@ -411,6 +413,8 @@ export class AppComponent implements OnInit, OnDestroy {
             'thread_no': thread.mainPostNo,
             // 'page_name': pageName,
         });
+
+        this.scrollService.checkScroll();
     }
     
     public closeThread(thread: Thread): void {
@@ -437,6 +441,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.setThreads(threads);
 
+        this.scrollService.checkScroll();
+
         firebase.analytics().logEvent('closed_thread', {
             'thread_no': thread.mainPostNo,
         });
@@ -446,6 +452,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.threads = [];
 
         this.softReload();
+
+        this.scrollService.checkScroll();
 
         firebase.analytics().logEvent('closed_all_threads');
     }
@@ -520,6 +528,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 'thread': thread.mainPostNo,
                 // 'page_name': pageName,
             });
+
+            this.scrollService.checkScroll();
         });
     }
 
@@ -565,6 +575,8 @@ export class AppComponent implements OnInit, OnDestroy {
             'thread_no': thread.mainPostNo,
             'post_no': post.no,
         });
+
+        this.scrollService.checkScroll();
     }
 
     public agreeToTermsFunc(): void {

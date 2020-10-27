@@ -49,6 +49,10 @@ export class ScrollService {
         this._subject.next(this.posY);
     }
 
+    public checkScroll(): void {
+        this._getOnscroll();
+    }
+
     private getScrollPosition(): number {
         return window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
     }
