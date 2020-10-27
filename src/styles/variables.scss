@@ -61,7 +61,7 @@ $primaryDarken: (
 );
 
 // $borderColor: scale-color($color: $backgroundColor, $lightness: 10%);
-$borderColor: map-get($backgroundColorDarken, 10);
+$borderColor: map-get($backgroundColorLighten, 10);
 
 // z-index management
 $topNavZIndex: 10;
