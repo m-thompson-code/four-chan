@@ -32,11 +32,19 @@
 
 img {
     max-width: 100%;
+    transition: filter 400ms cubic-bezier(0.4, 0, 0.2, 1);
     // height: auto;// Removed to allow for the height attr on image to allow for proper sizing when img renders before loading
 }
 
 .image-container {
     cursor: pointer;
+}
+.image-container:hover {
+    // filter: brightness(1.06) contrast(1.04);
+    img {
+        filter: brightness(1.06) contrast(1.04);
+        background: rgba(map-get($primaryDarken, 50), .1);
+    }
 }
 
 .comment {

@@ -12,6 +12,7 @@ import { LoaderService } from './services/loader.service';
 import { ScrollService } from './services/scroll.service';
 import { StorageService } from './services/storage.service';
 import { ResponsiveService } from './services/responsive.service';
+import { PromiseFuncPoolService } from './services/promise-func-pool.service';
 
 @Component({
     selector: 'app-root',
@@ -60,7 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     public pagesToLoad: number = 1;
 
-    constructor(private renderer: Renderer2, private dataService: DataService, 
+    constructor(private renderer: Renderer2, private dataService: DataService, private promiseFuncPoolService: PromiseFuncPoolService,
         private storageService: StorageService, private scrollService: ScrollService, 
         public loaderService: LoaderService, private responsiveService: ResponsiveService) {
     }
@@ -117,96 +118,118 @@ export class AppComponent implements OnInit, OnDestroy {
         void this.init();
     }
 
-    public getThreads(board: string): Promise<void> {
+    public init(): void {
         this.loaderService.inc();
 
-        const promises: Promise<any>[] = [];
+        void this.getBoards().then(() => {
+            const cachedBoards = this.storageService.getItem("__cached_boards");
+            const selectedBoards = cachedBoards && JSON.parse(cachedBoards) || [];
 
-        let pages = [1];
-
-        if (this.pagesToLoad) {
-            pages = [];
-            for (let i = 0; i < this.pagesToLoad; i++) {
-                pages.push(this.pagesToLoad - i);
+            if (selectedBoards.length) {
+                for (const selectedBoard of selectedBoards) {
+                    this.toggleBoard(selectedBoard);
+                }
             }
-        }
+            
+            const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
 
-        for (const page of pages) {
-            promises.push(this.dataService.getThreads(board, page).then(threads => {
-                for (const thread of threads) {
-                    if (this.blockThreadMap[thread.mainPostNo]) {
-                        continue;
-                    }
-    
-                    // Check if any updates were made to thread
-                    // If there were, add thread
-                    const oldThread = this.threadMap[thread.mainPostNo];
-    
-                    if (oldThread) {
-                        let changesFound = false;
-    
-                        for (let i = 0; i < thread.posts.length; i++) {
-                            const post = thread.posts[i];
-                            const oldPost = oldThread.posts[i];
-    
-                            if (post?.no !== oldPost?.no) {
-                                changesFound = true;
-                                break;
-                            }
+            // Cache only lives for 2 hours
+            if (_cachedAt && _cachedAt < Date.now() - 1000 * 60 * 60 * 2) {
+                this._clearBlocks();
+            } else {
+                const _cache = this.storageService.getItem("__block_thread_map");
+                this.blockThreadMap = _cache && JSON.parse(_cache) || {};
+            }
+        }).then(() => {
+            this.initalized = true;
+            return this.getThreadsLoop();
+        }).then(() => {
+            this.loaderService.dec();
+        });
+    }
+
+    public getThreadsFunc(board: string, page: number, delay: number=0): () => Promise<void> {
+        return () => this.dataService.getThreads(board, page).then(threads => {
+            this.loaderService.inc();
+
+            for (const thread of threads) {
+                if (this.blockThreadMap[thread.mainPostNo]) {
+                    continue;
+                }
+
+                // Check if any updates were made to thread
+                // If there were, add thread
+                const oldThread = this.threadMap[thread.mainPostNo];
+
+                if (oldThread) {
+                    let changesFound = false;
+
+                    for (let i = 0; i < thread.posts.length; i++) {
+                        const post = thread.posts[i];
+                        const oldPost = oldThread.posts[i];
+
+                        if (post?.no !== oldPost?.no) {
+                            changesFound = true;
+                            break;
                         }
-    
-                        if (changesFound) {
-                            if (oldThread.visibility) {
-                                // If we haven't scrolled past the thread yet, let's just update the thread on the page
-                                if (oldThread.visibility.topRatio < 1 || oldThread.visibility.bottomRatio > 1) {
-                                    // this.threadMap[thread.mainPostNo] = thread;
-    
-                                    const oldPostsLength = oldThread.posts.length;
-    
-                                    for (const post of thread.posts) {
-                                        let postExistsAlready = false;
-    
-                                        for (let i = 0; i < oldPostsLength; i++) {
-                                            const oldPost = oldThread.posts[i];
-    
-                                            if (post?.no === oldPost?.no) {
-                                                postExistsAlready = true;
-                                                break;
-                                            }
-                                        }
-                
-                                        if (!postExistsAlready) {
-                                            // oldThread.posts.push(post);
-                                            this.pushPost(oldThread, post);
+                    }
+
+                    if (changesFound) {
+                        if (oldThread.visibility) {
+                            // If we haven't scrolled past the thread yet, let's just update the thread on the page
+                            if (oldThread.visibility.topRatio < 1 || oldThread.visibility.bottomRatio > 1) {
+                                // this.threadMap[thread.mainPostNo] = thread;
+
+                                const oldPostsLength = oldThread.posts.length;
+
+                                for (const post of thread.posts) {
+                                    let postExistsAlready = false;
+
+                                    for (let i = 0; i < oldPostsLength; i++) {
+                                        const oldPost = oldThread.posts[i];
+
+                                        if (post?.no === oldPost?.no) {
+                                            postExistsAlready = true;
+                                            break;
                                         }
                                     }
-    
-                                    continue;
+            
+                                    if (!postExistsAlready) {
+                                        // oldThread.posts.push(post);
+                                        this.pushPost(oldThread, post);
+                                    }
                                 }
-                            }
-    
-                            this.addThread(thread);
-                        }
-    
-                        continue;
-                    }
-    
-                    this.addThread(thread);
-                }
-            }));
-        }
 
-        return Promise.all(promises).then(() => {
-            // pass
+                                continue;
+                            }
+                        }
+
+                        this.addThread(thread);
+                    }
+
+                    continue;
+                }
+
+                this.addThread(thread);
+            }
         }).catch(error => {
             console.error(error);
-            this._errorTrackerFunc('getThreads', error);
+            this._errorTrackerFunc('getThreadsFunc', error);
 
             if (!environment.production) {
                 debugger;
             }
         }).then(() => {
             this.loaderService.dec();
+            if (delay) {
+                return new Promise(resolve => {
+                    window.setTimeout(() => {
+                        resolve();
+                    }, delay);
+                })
+            }
+
+            return;
         });
     }
 
@@ -238,27 +261,41 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
+    private _doThreadsLoopTimeout(): void {
+        clearTimeout(this.getThreadsLoopTimeout);
+        this.getThreadsLoopTimeout = window.setTimeout(() => {
+            this.getThreadsLoop();
+        }, this.threads.length ? 10 * 1000 : 1000);
+    }
+
     public getThreadsLoop(): Promise<void> {
         clearTimeout(this.getThreadsLoopTimeout);
 
         if (this.threads.length > Math.min(720, this.boards.length * 120)) {
-            this.getThreadsLoopTimeout = window.setTimeout(() => {
-                this.getThreadsLoop();
-            }, 10 * 1000);
-
-            return Promise.resolve();
+            this._doThreadsLoopTimeout();
         }
 
-        let promises: Promise<any>[] = [];
+        const promiseFuncs: (() => Promise<any>)[] = [];
 
-        for (let board of this.selectedBoards) {
-            promises.push(this.getThreads(board));
+        let pages = [1];
+
+        if (this.pagesToLoad) {
+            pages = [];
+            for (let i = 0; i < this.pagesToLoad; i++) {
+                pages.push(this.pagesToLoad - i);
+            }
         }
 
-        return Promise.all(promises).then(() => {
-            this.getThreadsLoopTimeout = window.setTimeout(() => {
-                this.getThreadsLoop();
-            }, this.threads.length ? 10 * 1000 : 1000);
+        for (const page of pages) {
+            for (const board of this.selectedBoards) {
+                promiseFuncs.push(this.getThreadsFunc(board, page, 0));
+            }
+        }
+
+        const poolSize = Math.min(4, Math.floor(this.pagesToLoad * this.selectedBoards.length / 5));
+
+        return this.promiseFuncPoolService.pool(promiseFuncs, poolSize).then(() => {
+            this._doThreadsLoopTimeout();
         });
     }
 
@@ -277,37 +314,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 }, _retryCount * 1000 + 2000);
             }).then(() => {
                 this.getBoards(_retryCount + 1);
-            })
-        });
-    }
-
-    public init(): void {
-        this.loaderService.inc();
-
-        void this.getBoards().then(() => {
-            const cachedBoards = this.storageService.getItem("__cached_boards");
-            const selectedBoards = cachedBoards && JSON.parse(cachedBoards) || [];
-
-            if (selectedBoards.length) {
-                for (const selectedBoard of selectedBoards) {
-                    this.toggleBoard(selectedBoard);
-                }
-            }
-            
-            const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
-
-            // Cache only lives for 2 hours
-            if (_cachedAt && _cachedAt < Date.now() - 1000 * 60 * 60 * 2) {
-                this._clearBlocks();
-            } else {
-                const _cache = this.storageService.getItem("__block_thread_map");
-                this.blockThreadMap = _cache && JSON.parse(_cache) || {};
-            }
-        }).then(() => {
-            this.initalized = true;
-            return this.getThreadsLoop();
-        }).then(() => {
-            this.loaderService.dec();
+            });
         });
     }
 
@@ -463,7 +470,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     public softReload(): void {
         // Try to load more threads only if there's currently no threads
-        if (!this.threads.length) {
+        if (this.initalized && !this.threads.length) {
             this.getThreadsLoop();
         }
     }

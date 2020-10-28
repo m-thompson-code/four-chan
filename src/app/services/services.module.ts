@@ -5,6 +5,7 @@ import { ResponsiveService } from './responsive.service';
 import { DataService } from './data.service';
 import { StorageService } from './storage.service';
 import { LoaderService } from './loader.service';
+import { PromiseFuncPoolService } from './promise-func-pool.service';
 
 @NgModule({
     providers: [
@@ -15,6 +16,7 @@ import { LoaderService } from './loader.service';
         DataService,
         StorageService,
         LoaderService,
+        PromiseFuncPoolService,
     ],
 })
 export class ServicesModule {
