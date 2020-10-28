@@ -233,7 +233,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.softReload();
 
-        firebase.analytics().logEvent('toggled_board', {
+        this.analytics('toggled_board', {
             'board': board,
         });
     }
@@ -329,7 +329,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.softReload();
 
-        firebase.analytics().logEvent('cleared_threads_above');
+        this.analytics('cleared_threads_above');
     }
 
     public addThread(thread: Thread): void {
@@ -368,7 +368,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.scrollService.checkScroll();
 
-        firebase.analytics().logEvent('toggled_image', {
+        this.analytics('toggled_image', {
             'thread_no': post.resto || post.no,
             'post_no': post.no,
         });
@@ -412,7 +412,7 @@ export class AppComponent implements OnInit, OnDestroy {
         
         this._removeThread(thread);
 
-        firebase.analytics().logEvent('blocked_thread', {
+        this.analytics('blocked_thread', {
             'thread_no': thread.mainPostNo,
             // 'page_name': pageName,
         });
@@ -446,7 +446,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.scrollService.checkScroll();
 
-        firebase.analytics().logEvent('closed_thread', {
+        this.analytics('closed_thread', {
             'thread_no': thread.mainPostNo,
         });
     }
@@ -458,7 +458,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.scrollService.checkScroll();
 
-        firebase.analytics().logEvent('closed_all_threads');
+        this.analytics('closed_all_threads');
     }
 
     public softReload(): void {
@@ -478,7 +478,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (window.confirm("Clear cache?")) {
             this._clearBlocks();
 
-            firebase.analytics().logEvent('cleared_blocks');
+            this.analytics('cleared_blocks');
         }
     }
 
@@ -527,7 +527,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }).then(() => {
             this.loaderService.dec();
 
-            firebase.analytics().logEvent('loaded_full_posts', {
+            this.analytics('loaded_full_posts', {
                 'thread': thread.mainPostNo,
                 // 'page_name': pageName,
             });
@@ -574,7 +574,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.blockPostMap[thread.mainPostNo] = this.blockPostMap[thread.mainPostNo] || {};
         this.blockPostMap[thread.mainPostNo][post.no] = true;
 
-        firebase.analytics().logEvent('closed_post', {
+        this.analytics('closed_post', {
             'thread_no': thread.mainPostNo,
             'post_no': post.no,
         });
@@ -605,7 +605,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Start up analytics
         firebase.analytics();
 
-        firebase.analytics().logEvent('page_view', {
+        this.analytics('page_view', {
             'page_path': window.location.href || "(unknown)",
             // 'page_name': pageName,
         });
@@ -630,7 +630,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this._errorCountDown();
 
-        firebase.analytics().logEvent('error', {
+        this.analytics('error', {
             'func_name': funcName,
             'error': error.message || "unknown",
         });
@@ -639,6 +639,15 @@ export class AppComponent implements OnInit, OnDestroy {
     public setPagesToLoad(num: number): void {
         this.pagesToLoad = num;
         this.storageService.setItem('__cached_pages_to_load', "" + num);
+    }
+
+    private analytics(eventName: string, eventParams?: {[key: string]: any}): void {
+        if (!environment.production) {
+            // Skip analytics for local development
+            return;
+        }
+        
+        firebase.analytics().logEvent(eventName, eventParams);
     }
 
     public ngOnDestroy(): void {
