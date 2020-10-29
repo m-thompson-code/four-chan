@@ -36,7 +36,7 @@ I've deployed the application using [Firebase Hosting](https://firebase.google.c
 
 If you try to deploy without changing any code, you'll likely get an error for missing certs for Firebase or Heroku.
 
-To deploy the web application, you'll want to to start your own [Firebase project](https://firebase.google.com/docs/hosting) for hosting and if you want analytics, update [/src/app.component.ts](https://github.com/m-thompson-code/four-chan/blob/1.0.1/src/app/app.component.ts#L588) with your own config for firebase (optional).
+To deploy the web application, you'll want to to start your own [Firebase project](https://firebase.google.com/docs/hosting) for hosting and update [.firebaserc](https://github.com/m-thompson-code/four-chan/blob/main/.firebaserc#L3) with your projectId (currently 'four-chan') and if you want analytics, update [/src/app.component.ts](https://github.com/m-thompson-code/four-chan/blob/1.0.1/src/app/app.component.ts#L588) with your own config for firebase (optional).
 
 For the server (optional), you'll need to use Heroku (they have a [free tier](https://firebase.google.com/docs/hosting)) and host the server. Here's a hopefully useful [tutorial](https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up). I skimmed through it and it seemed to answer the questions I had when hosting a server on Heroku for the first time. If you got questions, submit an issue or contact me via email.
 
