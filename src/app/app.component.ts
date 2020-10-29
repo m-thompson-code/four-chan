@@ -13,6 +13,7 @@ import { ScrollService } from './services/scroll.service';
 import { StorageService } from './services/storage.service';
 import { ResponsiveService } from './services/responsive.service';
 import { PromiseFuncPoolService } from './services/promise-func-pool.service';
+import { FavButtonService } from './services/fav-button.service';
 
 @Component({
     selector: 'app-root',
@@ -62,11 +63,19 @@ export class AppComponent implements OnInit, OnDestroy {
     public pagesToLoad: number = 1;
 
     constructor(private renderer: Renderer2, private dataService: DataService, private promiseFuncPoolService: PromiseFuncPoolService,
-        private storageService: StorageService, private scrollService: ScrollService, 
+        private storageService: StorageService, private scrollService: ScrollService, public favButtonService: FavButtonService, 
         public loaderService: LoaderService, private responsiveService: ResponsiveService) {
     }
 
     public ngOnInit(): void {
+        const showFavButtons = this.storageService.getItem('__cached_show_fav_buttons') || 'on';
+
+        if (showFavButtons === 'on') {
+            this.favButtonService.showFavButtons = true;
+        } else {
+            this.favButtonService.showFavButtons = false;
+        }
+        
         this.pagesToLoad = +(this.storageService.getItem('__cached_pages_to_load') || 1);
 
         this.agreeToTerms = this.storageService.getItem('__cached_agree_to_terms') || '';
@@ -81,6 +90,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.scrollService.init(this.renderer);
         this.scrollObserver = this.scrollService.observable.subscribe(value => {
             this.threadInView = this._getThreadInView();
+            console.log(this.threadInView);
         });
 
         // Handle getting screen height css variables
@@ -655,6 +665,16 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         
         firebase.analytics().logEvent(eventName, eventParams);
+    }
+
+    public setShowFavButtons(show: boolean): void {
+        this.favButtonService.showFavButtons = show;
+
+        if (show) {
+            this.storageService.setItem('__cached_show_fav_buttons', 'on');
+        } else {
+            this.storageService.setItem('__cached_show_fav_buttons', 'off');
+        }
     }
 
     public ngOnDestroy(): void {

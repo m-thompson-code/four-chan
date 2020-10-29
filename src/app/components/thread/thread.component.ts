@@ -5,6 +5,7 @@ import { Visibility } from '@app/directives/scroll-listener.directive';
 
 import { Post, Thread } from '@app/services/data.service';
 import { ResponsiveService } from '@app/services/responsive.service';
+import { FavButtonService } from '@app/services/fav-button.service';
 
 @Component({
     selector: 'moo-thread',
@@ -27,7 +28,7 @@ export class ThreadComponent implements OnInit {
 
     public canShowButtons: boolean = false;
     
-    constructor(private responsiveService: ResponsiveService) {
+    constructor(private responsiveService: ResponsiveService, public favButtonService: FavButtonService) {
         this.JSON = JSON;
     }
 
@@ -81,27 +82,35 @@ export class ThreadComponent implements OnInit {
     }
 
     public updateVisibility(visiblity: Visibility): void {
-        this.canShowButtons = false;
+        setTimeout(() => {
+            this.canShowButtons = false;
 
-        this.thread.visibility = visiblity;
-
-        if (!this.showButtons) {
-            return;
-        }
-
-        const deviceType = this.responsiveService.responsiveMetadata.deviceType;
-
-        if (deviceType === 'desktop' || deviceType === 'desktop_4k') {
-            this.showButtons = true;
-        } else {
-            const height = this._threadDiv.nativeElement.offsetHeight;
-            const windowHeight = window.innerHeight;
-            
-            if (height > windowHeight * 1.5) {
+            this.thread.visibility = {
+                topRatio: visiblity.topRatio,
+                bottomRatio: visiblity.bottomRatio,
+                fixedTopRatio: visiblity.fixedTopRatio,
+                fixedBottomRatio: visiblity.fixedBottomRatio,
+                visibile: visiblity.visibile,
+            };
+    
+            if (!this.showButtons) {
+                return;
+            }
+    
+            const deviceType = this.responsiveService.responsiveMetadata.deviceType;
+    
+            if (deviceType === 'desktop' || deviceType === 'desktop_4k') {
                 this.canShowButtons = true;
             } else {
-                this.canShowButtons = false;
+                const height = this._threadDiv.nativeElement.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (height > windowHeight * 1.5) {
+                    this.canShowButtons = true;
+                } else {
+                    this.canShowButtons = false;
+                }
             }
-        }
+        }, 0);
     }
 }

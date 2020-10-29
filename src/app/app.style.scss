@@ -37,22 +37,31 @@
     width: 100%;
 }
 
-moo-button, .board-text, .board-link, .page-load-setting {
+moo-button, .board-text, .board-link, .setting {
     padding: $spacing/4;
 }
 
-.page-load-setting {
+.board-text, .setting {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
 
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.setting {
     moo-button {
         padding-top: 0;
         padding-bottom: 0;
     }
 }
+.setting.no-board-selected {
+    visibility: hidden;
+    pointer-events: none;
+}
 
-.board-text, .page-load-setting {
+.board-text, .setting {
     width: 100%;
     box-sizing: border-box;
 }
@@ -138,11 +147,11 @@ moo-button, .board-text, .board-link, .page-load-setting {
 }
 
 @media only screen and (max-width: 800px) {
-    moo-button, .board-text, .board-link, .page-load-setting {
+    moo-button, .board-text, .board-link, .setting {
         padding: $spacing/8;
     }
 
-    .page-load-setting-text {
+    .setting-text {
         width: 100%;
     }
 
@@ -294,4 +303,10 @@ moo-button, .board-text, .board-link, .page-load-setting {
     // spring animation
     animation: warning-animation 400ms cubic-bezier(0.61, 0.01, 0.28, 1.26);
     transition: bottom 400ms cubic-bezier(0.61, 0.01, 0.28, 1.26);
+}
+
+.setting, .board-text {
+    padding-bottom: 0;
+    padding-top: 0;
+    min-height: $touchAccessibile;
 }

@@ -3,6 +3,7 @@ import { Directive, ElementRef, Input, OnInit, EventEmitter, Output, ChangeDetec
 import { Subscription } from 'rxjs';
 
 import { ScrollService } from '@app/services/scroll.service';
+import { FavButtonService } from '@app/services/fav-button.service';
 
 export interface Visibility {
     topRatio: number;
@@ -18,23 +19,63 @@ export interface Visibility {
 })
 export class ScrollListenerDirective implements OnInit {
     private _scrollObserver?: Subscription;
+
+    // @Input() public detectVisibility: boolean = true;
+
+    private _detectVisibility: boolean = false;
+
+    @Input()
+    public set detectVisibility(detectVisibility: boolean) {
+        this._detectVisibility = detectVisibility;
+
+        if (!this._initalized) {
+            return;
+        }
+
+        if (this._detectVisibility) {
+            this._attachScrollObserver();
+        } else {
+            this._scrollObserver?.unsubscribe();
+        }
+    };
+
+    public get detectVisibility(): boolean {
+        return this._detectVisibility;
+    };
+
     @Output() public visibilityChanged: EventEmitter<Visibility> = new EventEmitter();
+
+    private _initalized: boolean = false;
 
     constructor(private element: ElementRef<HTMLElement>, private changeDetectorRef: ChangeDetectorRef, private scrollService: ScrollService) {
     }
 
     public ngOnInit(): void {
+        if (typeof this.detectVisibility === undefined) {
+            this.detectVisibility = true;
+        }
+        
+        if (this.detectVisibility) {
+            this._attachScrollObserver();
+            this.changeDetectorRef.detectChanges();
+        }
+    }
+
+    public ngAfterViewInit(): void {
+        if (this.detectVisibility) {
+            this._handlePosY(this.scrollService.posY);
+            this.changeDetectorRef.markForCheck();
+        }
+
+        this._initalized = true;
+    }
+
+    private _attachScrollObserver(): void {
         this._handlePosY(this.scrollService.posY);
-        this.changeDetectorRef.detectChanges();
 
         this._scrollObserver = this.scrollService.observable.subscribe(posY => {
             this._handlePosY(posY);
         });
-    }
-
-    public ngAfterViewInit(): void {
-        this._handlePosY(this.scrollService.posY);
-        this.changeDetectorRef.markForCheck();
     }
 
     private _handlePosY(posY: number): void {

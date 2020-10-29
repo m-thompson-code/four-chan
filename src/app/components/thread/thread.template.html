@@ -1,4 +1,4 @@
-<div #threadDiv [class]="'thread' + (highlight ? ' highlight' : '') + (showButtons ? ' show-buttons' : '')" mooScrollListener (visibilityChanged)="updateVisibility($event)">
+<div #threadDiv [class]="'thread' + (highlight ? ' highlight' : '') + (showButtons ? ' show-buttons' : '')" mooScrollListener (visibilityChanged)="updateVisibility($event)" [detectVisibility]="favButtonService.showFavButtons">
     <div class="main-posts posts">
         <moo-post *ngFor="let post of thread.mainPosts" [post]="post"></moo-post>
     </div>
@@ -12,7 +12,7 @@
     </div> -->
 </div>
 
-<ng-container *ngIf="canShowButtons && (showButtons || thread.visibility?.visibile)">
+<ng-container *ngIf="favButtonService.showFavButtons && canShowButtons && (showButtons || thread.visibility?.visibile)">
     <div [class]="'buttons' + (showButtons ? ' fade-in': '')" (mouseenter)="highlight = true" (mouseleave)="highlight = false">
         <moo-button [hasBackground]="true" icon="delete_forever" (click)="scrollToTopOfThread(); deleteSelected.emit()"><span class="button-text">Delete</span></moo-button>
         <moo-button [hasBackground]="true" icon="watch_later" (click)="scrollToTopOfThread(); snoozeSelected.emit()"><span class="button-text">Snooze</span></moo-button>

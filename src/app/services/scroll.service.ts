@@ -6,7 +6,7 @@ import { throttle } from 'rxjs/operators';
 import * as BezierEasing from 'bezier-easing';
 
 // import { environment } from '@environment';
-const DELAY_TIMER: number = 0;//50;
+const DELAY_TIMER: number = 50;
 
 @Injectable({
     providedIn: 'root',

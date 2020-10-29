@@ -9,8 +9,13 @@
     </div>
 
     <div *ngIf="showBoards" class="boards">
-        <div class="page-load-setting">
-            <div class="page-load-setting-text">Pages to monitor</div>
+        <div [class]="'setting' + (!selectedBoards.length ? ' no-board-selected' : '')">
+            <div class="setting-text">Show floating fav buttons (will help with performance if off)</div>
+            <moo-button [hasBackground]="favButtonService.showFavButtons" (click)="setShowFavButtons(!favButtonService.showFavButtons)">{{ favButtonService.showFavButtons ? 'On' : 'Off' }}</moo-button>
+        </div>
+
+        <div [class]="'setting' + (!selectedBoards.length ? ' no-board-selected' : '')">
+            <div class="setting-text">Pages to monitor</div>
             <moo-button *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [hasBackground]="num === pagesToLoad" (click)="setPagesToLoad(num)">{{ num }}</moo-button>
         </div>
 

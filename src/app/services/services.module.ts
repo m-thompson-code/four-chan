@@ -6,6 +6,7 @@ import { DataService } from './data.service';
 import { StorageService } from './storage.service';
 import { LoaderService } from './loader.service';
 import { PromiseFuncPoolService } from './promise-func-pool.service';
+import { FavButtonService } from './fav-button.service';
 
 @NgModule({
     providers: [
@@ -17,6 +18,7 @@ import { PromiseFuncPoolService } from './promise-func-pool.service';
         StorageService,
         LoaderService,
         PromiseFuncPoolService,
+        FavButtonService,
     ],
 })
 export class ServicesModule {
