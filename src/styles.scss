@@ -177,7 +177,7 @@ a:active {
     color: map-get($primaryDarken, 30);
 }
 
-// Remove (ugly) highlight styles on tap
+// Remove (ugly) highlight styles on tap and outline styles on interaction with iframes or video
 div, span, a, video, iframe {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-tap-highlight-color: transparent;
