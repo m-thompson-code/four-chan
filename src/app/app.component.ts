@@ -144,7 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
 
             // Cache only lives for 2 hours
-            if (_cachedAt && _cachedAt < Date.now() - 1000 * 60 * 60 * 2) {
+            if (_cachedAt && _cachedAt > Date.now() - 1000 * 60 * 60 * 2) {
                 this._clearBlocks();
             } else {
                 const _cache = this.storageService.getItem("__block_thread_map");
