@@ -144,7 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const _cachedAt = +(this.storageService.getItem("__block_at") || 0);
 
             // Cache only lives for 2 hours
-            if (_cachedAt && _cachedAt > Date.now() - 1000 * 60 * 60 * 2) {
+            if (_cachedAt && _cachedAt < Date.now() - 1000 * 60 * 60 * 2) {
                 this._clearBlocks();
             } else {
                 const _cache = this.storageService.getItem("__block_thread_map");
@@ -426,6 +426,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public blockThread(thread: Thread): void {
         this.blockThreadMap[thread.mainPostNo] = true;
         this.storageService.setItem("__block_thread_map", JSON.stringify(this.blockThreadMap));
+        this.storageService.setItem("__block_at", "" + Date.now());
         
         this._removeThread(thread);
 
